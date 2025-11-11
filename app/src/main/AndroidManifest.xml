@@ -5,6 +5,14 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
+
+<!--    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE" />-->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
 
     <application
         android:allowBackup="true"
@@ -17,7 +25,7 @@
         android:theme="@style/Theme.TaskTrack">
         <activity
             android:name=".MainActivity"
-            android:exported="false"
+            android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.TaskTrack">
             <intent-filter>
@@ -28,9 +36,10 @@
         </activity>
 
         <service
-            android:name="androidx.work.impl.background.systemjob.SystemJobService"
-            android:exported="true"
-            android:permission="android.permission.BIND_JOB_SERVICE" />
+            android:name=".WifiMonitorService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="dataSync" />
     </application>
 
 </manifest>
