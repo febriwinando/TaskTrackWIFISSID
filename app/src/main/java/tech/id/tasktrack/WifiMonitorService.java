@@ -20,13 +20,15 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+
 public class WifiMonitorService extends Service {
 
     private Handler handler;
     private Runnable wifiCheckTask;
     private DatabaseHelper dbHelper;
 
-    private static final int INTERVAL = 1 * 30 * 500; // 10 menit
+    // interval 15 menit
+    private static final int INTERVAL = 15 * 60 * 1000;
     private static final String CHANNEL_ID = "wifi_monitor_channel";
 
     @Override
@@ -34,60 +36,32 @@ public class WifiMonitorService extends Service {
         super.onCreate();
         dbHelper = new DatabaseHelper(this);
         handler = new Handler();
+        createNotificationChannel();
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel(
-                    "wifi_monitor_channel",
-                    "WiFi Monitor Service",
-                    NotificationManager.IMPORTANCE_LOW
-            );
-            NotificationManager manager = getSystemService(NotificationManager.class);
-            if (manager != null) {
-                manager.createNotificationChannel(channel);
-            }
-        }
-
-        Notification notification = new NotificationCompat.Builder(this, "wifi_monitor_channel")
+        // Buat notifikasi awal saat service mulai
+        Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setContentTitle("WiFi Monitor Aktif")
-                .setContentText("Mencatat koneksi WiFi setiap 10 menit")
-                .setSmallIcon(R.drawable.ic_launcher_background)
+                .setContentText("Mencatat koneksi WiFi setiap 15 menit")
+                .setSmallIcon(R.drawable.ic_launcher_foreground)
                 .setOngoing(true)
                 .build();
 
-        // Jalankan foreground service
         startForeground(1, notification);
 
-        startWifiCheckTask(); // fungsi kamu untuk logging koneksi
+        startWifiCheckTask();
 
         return START_STICKY;
     }
-
-//    @Override
-//    public int onStartCommand(Intent intent, int flags, int startId) {
-//        createNotificationChannel();
-//        Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
-//                .setContentTitle("WiFi Monitor Aktif")
-//                .setContentText("Mencatat koneksi WiFi setiap 10 menit")
-//                .setSmallIcon(R.drawable.ic_launcher_background)
-//                .setOngoing(true)
-//                .build();
-//
-//        startForeground(1, notification);
-//
-//        startWifiCheckTask();
-//
-//        return START_STICKY;
-//    }
 
     private void startWifiCheckTask() {
         wifiCheckTask = new Runnable() {
             @Override
             public void run() {
                 checkWifiConnection();
-                handler.postDelayed(this, INTERVAL);
+                handler.postDelayed(this, INTERVAL); // jadwalkan ulang
             }
         };
         handler.post(wifiCheckTask);
@@ -97,6 +71,8 @@ public class WifiMonitorService extends Service {
         WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         WifiInfo wifiInfo = wifiManager.getConnectionInfo();
 
+        if (wifiInfo == null) return;
+
         String ssid = wifiInfo.getSSID();
         int ip = wifiInfo.getIpAddress();
         String ipAddress = String.format(Locale.US, "%d.%d.%d.%d",
@@ -105,9 +81,34 @@ public class WifiMonitorService extends Service {
 
         String time = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(new Date());
 
-        Log.d("WiFiMonitor", "Jam: " + time + " | SSID: " + ssid + " | IP: " + ipAddress);
-        createNotificationChannel();
+        if (ssid != null && ssid.equals("<unknown ssid>")) {
+            ssid = "Tidak Terhubung";
+        } else if (ssid != null) {
+            ssid = ssid.replace("\"", ""); // hapus tanda kutip dari SSID
+        }
+
+        // Simpan ke database
         dbHelper.insertWifiLog(time, ssid, ipAddress);
+
+        // Logcat debug
+        Log.d("WiFiMonitor", "Jam: " + time + " | SSID: " + ssid + " | IP: " + ipAddress);
+
+        // Update notifikasi setiap kali dicek
+        updateNotification(ssid, time);
+    }
+
+    private void updateNotification(String ssid, String time) {
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        if (notificationManager == null) return;
+
+        Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
+                .setContentTitle("WiFi Aktif: " + ssid)
+                .setContentText("Terakhir dicek: " + time)
+                .setSmallIcon(R.drawable.ic_launcher_foreground)
+                .setOngoing(true)
+                .build();
+
+        notificationManager.notify(1, notification);
     }
 
     private void createNotificationChannel() {
@@ -117,10 +118,9 @@ public class WifiMonitorService extends Service {
                     "WiFi Monitor Service",
                     NotificationManager.IMPORTANCE_LOW
             );
+            channel.setDescription("Notifikasi WiFi setiap 15 menit");
             NotificationManager manager = getSystemService(NotificationManager.class);
-            if (manager != null) {
-                manager.createNotificationChannel(channel);
-            }
+            if (manager != null) manager.createNotificationChannel(channel);
         }
     }
 
@@ -136,3 +136,105 @@ public class WifiMonitorService extends Service {
         return null;
     }
 }
+
+//
+//public class WifiMonitorService extends Service {
+//
+//    private Handler handler;
+//    private Runnable wifiCheckTask;
+//    private DatabaseHelper dbHelper;
+//
+//    private static final int INTERVAL = 15 * 60 * 1000; // 10 menit
+//    private static final String CHANNEL_ID = "wifi_monitor_channel";
+//
+//    @Override
+//    public void onCreate() {
+//        super.onCreate();
+//        dbHelper = new DatabaseHelper(this);
+//        handler = new Handler();
+//    }
+//
+//    @Override
+//    public int onStartCommand(Intent intent, int flags, int startId) {
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//            NotificationChannel channel = new NotificationChannel(
+//                    "wifi_monitor_channel",
+//                    "WiFi Monitor Service",
+//                    NotificationManager.IMPORTANCE_LOW
+//            );
+//            NotificationManager manager = getSystemService(NotificationManager.class);
+//            if (manager != null) {
+//                manager.createNotificationChannel(channel);
+//            }
+//        }
+//
+//        Notification notification = new NotificationCompat.Builder(this, "wifi_monitor_channel")
+//                .setContentTitle("WiFi Monitor Aktif")
+//                .setContentText("Mencatat koneksi WiFi setiap 10 menit")
+//                .setSmallIcon(R.drawable.ic_launcher_background)
+//                .setOngoing(true)
+//                .build();
+//
+//        // Jalankan foreground service
+//        startForeground(1, notification);
+//
+//        startWifiCheckTask(); // fungsi kamu untuk logging koneksi
+//
+//        return START_STICKY;
+//    }
+//
+//
+//    private void startWifiCheckTask() {
+//        wifiCheckTask = new Runnable() {
+//            @Override
+//            public void run() {
+//                checkWifiConnection();
+//                handler.postDelayed(this, INTERVAL);
+//            }
+//        };
+//        handler.post(wifiCheckTask);
+//    }
+//
+//    private void checkWifiConnection() {
+//        WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+//        WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+//
+//        String ssid = wifiInfo.getSSID();
+//        int ip = wifiInfo.getIpAddress();
+//        String ipAddress = String.format(Locale.US, "%d.%d.%d.%d",
+//                (ip & 0xff), (ip >> 8 & 0xff),
+//                (ip >> 16 & 0xff), (ip >> 24 & 0xff));
+//
+//        String time = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(new Date());
+//
+//        Log.d("WiFiMonitor", "Jam: " + time + " | SSID: " + ssid + " | IP: " + ipAddress);
+//        createNotificationChannel();
+//        dbHelper.insertWifiLog(time, ssid, ipAddress);
+//    }
+//
+//    private void createNotificationChannel() {
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//            NotificationChannel channel = new NotificationChannel(
+//                    CHANNEL_ID,
+//                    "WiFi Monitor Service",
+//                    NotificationManager.IMPORTANCE_LOW
+//            );
+//            NotificationManager manager = getSystemService(NotificationManager.class);
+//            if (manager != null) {
+//                manager.createNotificationChannel(channel);
+//            }
+//        }
+//    }
+//
+//    @Override
+//    public void onDestroy() {
+//        handler.removeCallbacks(wifiCheckTask);
+//        super.onDestroy();
+//    }
+//
+//    @Nullable
+//    @Override
+//    public IBinder onBind(Intent intent) {
+//        return null;
+//    }
+//}
