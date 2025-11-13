@@ -11,6 +11,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.provider.Settings;
+import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -23,16 +25,45 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import tech.id.tasktrack.api.ApiClient;
+import tech.id.tasktrack.api.ApiService;
+import tech.id.tasktrack.api.SessionManager;
+import tech.id.tasktrack.model.Pegawai;
+
 public class MainActivity extends AppCompatActivity {
 
     private static final int REQ_FINE_LOCATION = 1001;
     private static final int REQ_BACKGROUND_LOCATION = 1002;
     private static final int REQ_NOTIFICATION = 1003;
+    ApiService api;
+    SessionManager session;
+    TextView tvResult;
+    Button btnLogout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        EdgeToEdge.enable(this);
+        setContentView(R.layout.activity_main);
+
+        tvResult = findViewById(R.id.tvResult);
+        btnLogout = findViewById(R.id.btnLogout);
+
         checkNotificationPermission();
+
+
+        api = ApiClient.getClient().create(ApiService.class);
+        session = new SessionManager(this);
+
+//        loadPegawai();
+//
+//        btnLogout.setOnClickListener(v -> logout());
     }
 
     private void checkNotificationPermission() {
@@ -130,5 +161,47 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == REQ_NOTIFICATION) {
             checkFineLocationPermission();
         }
+    }
+
+    private void loadPegawai() {
+        String token = session.getToken();
+
+        api.getPegawai(token).enqueue(new Callback<List<Pegawai>>() {
+            @Override
+            public void onResponse(Call<List<Pegawai>> call, Response<List<Pegawai>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    StringBuilder sb = new StringBuilder();
+                    for (Pegawai p : response.body()) {
+                        sb.append(p.name).append(" (").append(p.email).append(")\n");
+                    }
+                    tvResult.setText(sb.toString());
+                } else {
+                    tvResult.setText("Failed to load data");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Pegawai>> call, Throwable t) {
+                tvResult.setText("Error: " + t.getMessage());
+            }
+        });
+    }
+
+    private void logout() {
+        String token = session.getToken();
+
+        api.logout(token).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                session.clearSession();
+                Toast.makeText(MainActivity.this, "Logged out", Toast.LENGTH_SHORT).show();
+                finish();
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Toast.makeText(MainActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }
