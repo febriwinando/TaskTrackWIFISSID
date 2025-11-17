@@ -5,4 +5,8 @@
         <item name="android:translationY">-10dp</item>
 <!--        <item name="background">@color/biru</item>-->
     </style>
+
+    <style name="ImageStyle2">
+        <item name="cornerSize">10%</item>
+    </style>
 </resources>

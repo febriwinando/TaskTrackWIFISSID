@@ -1,63 +1,91 @@
 package tech.id.tasktrack;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.jspecify.annotations.NonNull;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 
-import java.util.List;
+public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.GridViewHolder> {
+    public final static Locale localeID = new Locale("in", "ID");
 
-import tech.id.tasktrack.model.Schedule;
+    static ArrayList<String> tanggalCalendar = new ArrayList<>();
+    static ArrayList<String> tanggalJadwal = new ArrayList<>();
+    public static SimpleDateFormat BULAN = new SimpleDateFormat("MM", localeID);
+    public static SimpleDateFormat TAHUN = new SimpleDateFormat("yyyy", localeID);
+    public void printDatesInMonth(int year, int month) {
+        tanggalCalendar.clear();
+        tanggalJadwal.clear();
 
-public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHolder> {
+        SimpleDateFormat fmt = new SimpleDateFormat("d");
+        SimpleDateFormat fmtJadwalSift = new SimpleDateFormat("yyyy-MM-dd");
 
-private final List<Schedule> list;
-private final Context context;
+        SimpleDateFormat fmtBefore = new SimpleDateFormat("d/M");
+        Calendar cal = Calendar.getInstance();
+        cal.clear();
+        cal.set(year, month - 1, 1);
+        int daysInMonth = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
 
-public ScheduleAdapter(Context context, List<Schedule> list) {
-    this.context = context;
-    this.list = list;
-}
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(cal.getTime());
+        calendar.add(Calendar.DAY_OF_YEAR, -1);
 
-public static class ViewHolder extends RecyclerView.ViewHolder {
-    TextView tvTanggal, tvTask, tvLokasi, tvKeterangan;
+        String newDate = fmtBefore.format(calendar.getTime());
+        String dateLasmonth = fmtJadwalSift.format(calendar.getTime());
 
-    public ViewHolder(View itemView) {
-        super(itemView);
-        tvTask = itemView.findViewById(R.id.tvTask);
-        tvLokasi = itemView.findViewById(R.id.tvLokasi);
+        tanggalCalendar.add(newDate);
+        tanggalJadwal.add(dateLasmonth);
+
+        for (int i = 0; i < daysInMonth; i++) {
+            tanggalCalendar.add(fmt.format(cal.getTime()));
+            tanggalJadwal.add(fmtJadwalSift.format(cal.getTime()));
+            cal.add(Calendar.DAY_OF_MONTH, 1);
+        }
     }
-}
 
-@Override
-public ScheduleAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-    View v = LayoutInflater.from(context).inflate(R.layout.item_schedule, parent, false);
-    return new ViewHolder(v);
-}
+    public ScheduleAdapter(Context context) {
 
-@Override
-public void onBindViewHolder(ScheduleAdapter.@NonNull ViewHolder holder, int position) {
-    Schedule item = list.get(position);
 
-    holder.tvTask.setText((item.kegiatan != null ? item.kegiatan.task : "-")
-    );
+        int bulan = Integer.parseInt(BULAN.format(new Date()));
+        int tahun = Integer.parseInt(TAHUN.format(new Date()));
 
-    holder.tvLokasi.setText(
-                    (item.lokasi != null ? item.lokasi.building : "-") +
-                    " - " +
-                    (item.lokasi != null ? item.lokasi.floor : "-")
-    );
+        printDatesInMonth(tahun, bulan);
 
-}
+    }
 
-@Override
-public int getItemCount() {
-    return list.size();
-}
+    @NonNull
+    @Override
+    public GridViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_grid_jadwal, parent, false);
+        return new GridViewHolder(view);
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull GridViewHolder holder, int position) {
+        holder.tanggal.setText(tanggalCalendar.get(position));
+    }
+
+    @Override
+    public int getItemCount() {
+        return tanggalJadwal.size();
+    }
+
+    public class GridViewHolder extends RecyclerView.ViewHolder {
+        TextView tanggal;
+        public GridViewHolder(@NonNull View itemView) {
+            super(itemView);
+
+            tanggal = itemView.findViewById(R.id.txtTanggal);
+
+        }
+    }
 }

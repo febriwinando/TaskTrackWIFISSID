@@ -1,27 +1,22 @@
 package tech.id.tasktrack;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.PowerManager;
 import android.provider.Settings;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
@@ -30,7 +25,6 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -51,12 +45,13 @@ public class MainActivity extends AppCompatActivity {
     ApiService api;
     SessionManager session;
     RecyclerView rvSchedule;
-    ScheduleAdapter adapter;
+    TodayScheduleAdapter adapter;
     ProgressBar progressBar;
     ImageView ivLoadSchedule;
     int pegawaiId;
     DatabaseHelper dbHelper;
     String today;
+    CardView cvSchedule;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,16 +63,24 @@ public class MainActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
         today = new java.text.SimpleDateFormat("yyyy-MM-dd").format(new java.util.Date());
         progressBar = findViewById(R.id.pgbLoadSchedule);
         rvSchedule = findViewById(R.id.rvSchedule);
         rvSchedule.setLayoutManager(new LinearLayoutManager(this));
         ivLoadSchedule = findViewById(R.id.ivLoadSchedule);
+        cvSchedule = findViewById(R.id.cvSchedule);
 
         checkNotificationPermission();
         dbHelper = new DatabaseHelper(this);
 
-
+        cvSchedule.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, ScheduleActivity.class);
+                startActivity(intent);
+            }
+        });
 
         api = ApiClient.getClient().create(ApiService.class);
         session = new SessionManager(this);
@@ -95,10 +98,8 @@ public class MainActivity extends AppCompatActivity {
         List<Schedule> localSchedules = dbHelper.getSchedulesByTanggal(pegawaiId, today);
 
         if (!localSchedules.isEmpty()) {
-            adapter = new ScheduleAdapter(MainActivity.this, localSchedules);
+            adapter = new TodayScheduleAdapter(MainActivity.this, localSchedules);
             rvSchedule.setAdapter(adapter);
-
-            Toast.makeText(MainActivity.this, "Offline mode: data lokal ditampilkan", Toast.LENGTH_SHORT).show();
         }
 
     }
@@ -123,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
 
                             List<Schedule> todaySchedules = filterToday(schedules);
 
-                            adapter = new ScheduleAdapter(MainActivity.this, todaySchedules);
+                            adapter = new TodayScheduleAdapter(MainActivity.this, todaySchedules);
                             rvSchedule.setAdapter(adapter);
 
                         } else {
@@ -132,10 +133,9 @@ public class MainActivity extends AppCompatActivity {
 
                             if (!localSchedules.isEmpty()) {
 //                                adapter.setData(localSchedules);
-                                adapter = new ScheduleAdapter(MainActivity.this, localSchedules);
+                                adapter = new TodayScheduleAdapter(MainActivity.this, localSchedules);
                                 rvSchedule.setAdapter(adapter);
 
-                                Toast.makeText(MainActivity.this, "Offline mode: data lokal ditampilkan", Toast.LENGTH_SHORT).show();
                             } else {
                                 Toast.makeText(MainActivity.this, "Tidak ada data", Toast.LENGTH_SHORT).show();
                             }
@@ -151,11 +151,10 @@ public class MainActivity extends AppCompatActivity {
                         // Ambil dari SQLite saat offline
                         List<Schedule> localSchedules = dbHelper.getSchedulesByTanggal(pegawaiId, today);
 
-                        adapter = new ScheduleAdapter(MainActivity.this, localSchedules);
+                        adapter = new TodayScheduleAdapter(MainActivity.this, localSchedules);
                         rvSchedule.setAdapter(adapter);
 
                         if (!localSchedules.isEmpty()) {
-//                            adapter.setData(localSchedules);
                             Toast.makeText(MainActivity.this, "Offline mode: data lokal ditampilkan", Toast.LENGTH_SHORT).show();
                         } else {
                             Toast.makeText(MainActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_LONG).show();
@@ -248,7 +247,7 @@ public class MainActivity extends AppCompatActivity {
         } else {
             startService(serviceIntent);
         }
-        Toast.makeText(this, "Service WiFi berjalan di background ✅", Toast.LENGTH_LONG).show();
+//        Toast.makeText(this, "Service WiFi berjalan di background ✅", Toast.LENGTH_LONG).show();
     }
 
     @Override

@@ -6,43 +6,50 @@
     android:padding="12dp"
     android:elevation="4dp"
     app:cardCornerRadius="20dp">
-
-    <LinearLayout
+    <RelativeLayout
         android:padding="10dp"
-        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/tvTask"
-            android:textStyle="bold"
-            android:text="Task: Monitoring WiFi"
-            android:textSize="18sp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/tvTask"
+                android:textStyle="bold"
+                android:text="Task: Monitoring WiFi"
+                android:textSize="18sp"/>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/tvLokasi"
-            android:text="Lokasi: Building A - Floor 2"
-            android:textSize="16sp"
-            android:textStyle="normal"
-            android:layout_marginTop="3dp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/tvLokasi"
+                android:text="Lokasi: Building A - Floor 2"
+                android:textSize="16sp"
+                android:textStyle="normal"
+                android:layout_marginTop="3dp"/>
+        </LinearLayout>
 
         <ImageView
-            android:id="@+id/ivListBerakhlah1"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:id="@+id/ivUnChecked"
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:src="@drawable/checked_non"
             android:layout_marginEnd="10dp"/>
 
         <ImageView
-            android:id="@+id/ivCheckBer1"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:id="@+id/ivChecked"
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:src="@drawable/checked"
+            android:visibility="gone"
             android:layout_marginEnd="10dp"/>
-    </LinearLayout>
-
+    </RelativeLayout>
 </androidx.cardview.widget.CardView>
