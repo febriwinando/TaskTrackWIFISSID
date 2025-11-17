@@ -11,7 +11,10 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.provider.Settings;
+import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,7 +27,10 @@ import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -34,6 +40,8 @@ import tech.id.tasktrack.api.ApiClient;
 import tech.id.tasktrack.api.ApiService;
 import tech.id.tasktrack.api.SessionManager;
 import tech.id.tasktrack.model.Pegawai;
+import tech.id.tasktrack.model.Schedule;
+import tech.id.tasktrack.model.ScheduleResponse;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -42,8 +50,10 @@ public class MainActivity extends AppCompatActivity {
     private static final int REQ_NOTIFICATION = 1003;
     ApiService api;
     SessionManager session;
-//    TextView tvResult;
-//    Button btnLogout;
+    RecyclerView rvSchedule;
+    ScheduleAdapter adapter;
+    ProgressBar progressBar;
+    ImageView ivLoadSchedule;
 
     DatabaseHelper dbHelper;
     @Override
@@ -58,18 +68,90 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
+        progressBar = findViewById(R.id.pgbLoadSchedule);
+        rvSchedule = findViewById(R.id.rvSchedule);
+        rvSchedule.setLayoutManager(new LinearLayoutManager(this));
+        ivLoadSchedule = findViewById(R.id.ivLoadSchedule);
+
         checkNotificationPermission();
         dbHelper = new DatabaseHelper(this);
+
+
 
         api = ApiClient.getClient().create(ApiService.class);
         session = new SessionManager(this);
         Pegawai p = dbHelper.getPegawai();
+
+        ivLoadSchedule.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                loadSchedule();
+            }
+        });
 
 //        loadPegawai();
 
 //        btnLogout.setOnClickListener(v -> logout());
     }
 
+    private void loadSchedule() {
+        int pegawaiId = session.getPegawaiId();
+        String token = session.getToken();
+        ivLoadSchedule.setVisibility(View.INVISIBLE);
+        progressBar.setVisibility(View.VISIBLE);
+
+        api.getScheduleByPegawai(token, pegawaiId)
+                .enqueue(new Callback<ScheduleResponse>() {
+                    @Override
+                    public void onResponse(Call<ScheduleResponse> call, Response<ScheduleResponse> response) {
+                        progressBar.setVisibility(View.GONE);
+
+                        if (response.isSuccessful() && response.body() != null) {
+
+                            List<Schedule> schedules = response.body().data;
+
+                            // SIMPAN KE SQLITE
+                            dbHelper.insertSchedule(schedules);
+                            adapter = new ScheduleAdapter(MainActivity.this, schedules);
+                            rvSchedule.setAdapter(adapter);
+
+                        } else {
+                            // Jika API gagal, ambil dari database lokal
+                            List<Schedule> localSchedules = dbHelper.getSchedulesByPegawai(pegawaiId);
+
+                            if (!localSchedules.isEmpty()) {
+//                                adapter.setData(localSchedules);
+                                adapter = new ScheduleAdapter(MainActivity.this, localSchedules);
+                                rvSchedule.setAdapter(adapter);
+
+                                Toast.makeText(MainActivity.this, "Offline mode: data lokal ditampilkan", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(MainActivity.this, "Tidak ada data", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                        ivLoadSchedule.setVisibility(View.VISIBLE);
+
+                    }
+
+                    @Override
+                    public void onFailure(Call<ScheduleResponse> call, Throwable t) {
+                        progressBar.setVisibility(View.GONE);
+
+                        // Ambil dari SQLite saat offline
+                        List<Schedule> localSchedules = dbHelper.getSchedulesByPegawai(pegawaiId);
+                        rvSchedule.setAdapter(adapter);
+
+                        if (!localSchedules.isEmpty()) {
+//                            adapter.setData(localSchedules);
+                            Toast.makeText(MainActivity.this, "Offline mode: data lokal ditampilkan", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(MainActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_LONG).show();
+                        }
+                        ivLoadSchedule.setVisibility(View.VISIBLE);
+
+                    }
+                });
+    }
     private void checkNotificationPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
@@ -196,14 +278,14 @@ public class MainActivity extends AppCompatActivity {
 
         api.logout(token).enqueue(new Callback<Void>() {
             @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
+            public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
                 session.clearSession();
                 Toast.makeText(MainActivity.this, "Logged out", Toast.LENGTH_SHORT).show();
                 finish();
             }
 
             @Override
-            public void onFailure(Call<Void> call, Throwable t) {
+            public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
                 Toast.makeText(MainActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });

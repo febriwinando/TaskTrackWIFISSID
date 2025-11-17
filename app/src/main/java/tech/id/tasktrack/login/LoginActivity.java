@@ -91,6 +91,7 @@ public class LoginActivity extends AppCompatActivity {
 
                 if (response.isSuccessful() && response.body() != null) {
                     session.saveToken("Bearer " + response.body().token);
+                    session.savePegawaiId(response.body().pegawai.id);
                     Pegawai pegawai = response.body().pegawai;
                     dbHelper.insertPegawai(pegawai);
                     startActivity(new Intent(LoginActivity.this, MainActivity.class));

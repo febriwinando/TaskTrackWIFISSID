@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 public class SessionManager {
     private static final String PREF_NAME = "APP_PREFS";
     private static final String KEY_TOKEN = "AUTH_TOKEN";
+    private static final String KEY_PEGAWAI_ID = "PEGAWAI_ID";
 
     private final SharedPreferences prefs;
 
@@ -21,7 +22,25 @@ public class SessionManager {
         return prefs.getString(KEY_TOKEN, null);
     }
 
+//    public void clearSession() {
+//        prefs.edit().remove(KEY_TOKEN).apply();
+//    }
+
+    // -------------------------
+    // PEGAWAI ID
+    // -------------------------
+    public void savePegawaiId(int id) {
+        prefs.edit().putInt(KEY_PEGAWAI_ID, id).apply();
+    }
+
+    public int getPegawaiId() {
+        return prefs.getInt(KEY_PEGAWAI_ID, 0); // default 0
+    }
+
+    // -------------------------
+    // CLEAR
+    // -------------------------
     public void clearSession() {
-        prefs.edit().remove(KEY_TOKEN).apply();
+        prefs.edit().clear().apply();
     }
 }

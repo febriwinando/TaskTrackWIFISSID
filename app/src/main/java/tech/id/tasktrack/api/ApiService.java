@@ -7,9 +7,11 @@ import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
+import retrofit2.http.Path;
 import tech.id.tasktrack.model.LoginRequest;
 import tech.id.tasktrack.model.LoginResponse;
 import tech.id.tasktrack.model.Pegawai;
+import tech.id.tasktrack.model.ScheduleResponse;
 
 public interface ApiService {
     @POST("login")
@@ -20,4 +22,10 @@ public interface ApiService {
 
     @POST("logout")
     Call<Void> logout(@Header("Authorization") String token);
+
+    @GET("schedule/pegawai/{id}")
+    Call<ScheduleResponse> getScheduleByPegawai(
+            @Header("Authorization") String token,
+            @Path("id") int pegawaiId
+    );
 }

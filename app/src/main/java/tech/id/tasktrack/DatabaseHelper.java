@@ -7,14 +7,20 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import tech.id.tasktrack.model.Kegiatan;
+import tech.id.tasktrack.model.Lokasi;
 import tech.id.tasktrack.model.Pegawai;
+import tech.id.tasktrack.model.Schedule;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "wifi_monitor.db";
     private static final int DATABASE_VERSION = 1;
     private static final String TABLE_NAME = "wifi_log";
     public static final String TABLE_PEGAWAI = "pegawais";
-
+    public static final String TABLE_SCHEDULE = "schedules";
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -42,13 +48,116 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 ")";
 
         db.execSQL(createPegawaiTable);
+
+        String CREATE_SCHEDULE_TABLE = "CREATE TABLE " + TABLE_SCHEDULE + "(" +
+                "id INTEGER PRIMARY KEY, " +
+                "tanggal TEXT, " +
+                "pegawai_id INTEGER, " +
+                "pegawai_name TEXT, " +
+                "kegiatan_id INTEGER, " +
+                "task TEXT, " +
+                "kegiatan_keterangan TEXT, " +
+                "lokasi_id INTEGER, " +
+                "building TEXT, " +
+                "floor TEXT, " +
+                "ssid TEXT, " +
+                "keterangan TEXT" +
+                ")";
+        db.execSQL(CREATE_SCHEDULE_TABLE);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_PEGAWAI);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_SCHEDULE);
         onCreate(db);
+    }
+
+
+    // Insert data schedule
+    public void insertSchedule(List<Schedule> schedules) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        db.beginTransaction();
+        try {
+            db.delete(TABLE_SCHEDULE, null, null); // bersihkan data lama
+
+            for (Schedule s : schedules) {
+                ContentValues cv = new ContentValues();
+                cv.put("id", s.id);
+                cv.put("tanggal", s.tanggal);
+
+                cv.put("pegawai_id", s.pegawai.id);
+                cv.put("pegawai_name", s.pegawai.name);
+
+                cv.put("kegiatan_id", s.kegiatan.id);
+                cv.put("task", s.kegiatan.task);
+                cv.put("kegiatan_keterangan", s.kegiatan.keterangan);
+
+                cv.put("lokasi_id", s.lokasi.id);
+                cv.put("building", s.lokasi.building);
+                cv.put("floor", s.lokasi.floor);
+                cv.put("ssid", s.lokasi.ssid);
+
+                cv.put("keterangan", s.keterangan);
+
+                db.insert(TABLE_SCHEDULE, null, cv);
+            }
+
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+        }
+    }
+
+    // Ambil data berdasarkan pegawai
+    public List<Schedule> getSchedulesByPegawai(int pegawaiId) {
+        List<Schedule> list = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.rawQuery(
+                "SELECT * FROM " + TABLE_SCHEDULE + " WHERE pegawai_id = ?",
+                new String[]{String.valueOf(pegawaiId)}
+        );
+
+        if (cursor.moveToFirst()) {
+            do {
+                Schedule sc = new Schedule();
+
+                sc.id = cursor.getInt(cursor.getColumnIndexOrThrow("id"));
+                sc.tanggal = cursor.getString(cursor.getColumnIndexOrThrow("tanggal"));
+
+                // Pegawai
+                Pegawai pg = new Pegawai();
+                pg.id = cursor.getInt(cursor.getColumnIndexOrThrow("pegawai_id"));
+                pg.name = cursor.getString(cursor.getColumnIndexOrThrow("pegawai_name"));
+                sc.pegawai = pg;
+
+                // Kegiatan
+                Kegiatan kg = new Kegiatan();
+                kg.id = cursor.getInt(cursor.getColumnIndexOrThrow("kegiatan_id"));
+                kg.task = cursor.getString(cursor.getColumnIndexOrThrow("task"));
+                kg.keterangan = cursor.getString(cursor.getColumnIndexOrThrow("kegiatan_keterangan"));
+                sc.kegiatan = kg;
+
+                // Lokasi
+                Lokasi lk = new Lokasi();
+                lk.id = cursor.getInt(cursor.getColumnIndexOrThrow("lokasi_id"));
+                lk.building = cursor.getString(cursor.getColumnIndexOrThrow("building"));
+                lk.floor = cursor.getString(cursor.getColumnIndexOrThrow("floor"));
+                lk.ssid = cursor.getString(cursor.getColumnIndexOrThrow("ssid"));
+                sc.lokasi = lk;
+
+                sc.keterangan = cursor.getString(cursor.getColumnIndexOrThrow("keterangan"));
+
+                list.add(sc);
+
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        return list;
     }
 
     // --------------------------------------------------------------------
