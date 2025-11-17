@@ -3,14 +3,22 @@ package tech.id.tasktrack.model;
 public class Pegawai {
     public int id;
     public String name;
-    public String email;
     public String nik;
     public String employee_id;
+    public String email;
     public String nomor_wa;
     public String level;
     public String status;
+    public String inactive_reason;
     public String foto;
 
+    public String getInactive_reason() {
+        return inactive_reason;
+    }
+
+    public void setInactive_reason(String inactive_reason) {
+        this.inactive_reason = inactive_reason;
+    }
 
     public int getId() {
         return id;

@@ -6,7 +6,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ApiClient {
-    private static final String BASE_URL = "http://172.15.1.36:8000/api/"; // ganti dengan IP server Laravel
+    private static final String BASE_URL = "http://172.15.1.239:8000/api/"; // ganti dengan IP server Laravel
     private static Retrofit retrofit;
 
     public static Retrofit getClient() {

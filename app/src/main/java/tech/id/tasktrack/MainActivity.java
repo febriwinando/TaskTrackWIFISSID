@@ -42,27 +42,31 @@ public class MainActivity extends AppCompatActivity {
     private static final int REQ_NOTIFICATION = 1003;
     ApiService api;
     SessionManager session;
-    TextView tvResult;
-    Button btnLogout;
+//    TextView tvResult;
+//    Button btnLogout;
 
+    DatabaseHelper dbHelper;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
-
-        tvResult = findViewById(R.id.tvResult);
-        btnLogout = findViewById(R.id.btnLogout);
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
+        });
 
         checkNotificationPermission();
-
+        dbHelper = new DatabaseHelper(this);
 
         api = ApiClient.getClient().create(ApiService.class);
         session = new SessionManager(this);
+        Pegawai p = dbHelper.getPegawai();
 
 //        loadPegawai();
-//
+
 //        btnLogout.setOnClickListener(v -> logout());
     }
 
@@ -174,15 +178,15 @@ public class MainActivity extends AppCompatActivity {
                     for (Pegawai p : response.body()) {
                         sb.append(p.name).append(" (").append(p.email).append(")\n");
                     }
-                    tvResult.setText(sb.toString());
+//                    tvResult.setText(sb.toString());
                 } else {
-                    tvResult.setText("Failed to load data");
+//                    tvResult.setText("Failed to load data");
                 }
             }
 
             @Override
             public void onFailure(Call<List<Pegawai>> call, Throwable t) {
-                tvResult.setText("Error: " + t.getMessage());
+//                tvResult.setText("Error: " + t.getMessage());
             }
         });
     }
