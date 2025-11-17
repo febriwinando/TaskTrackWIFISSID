@@ -5,17 +5,16 @@
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    android:background="@color/white"
-    android:id="@+id/llTanggalGridJadwal"
+    android:id="@+id/cvScheduleList"
     app:cardCornerRadius="10dp"
-    android:layout_margin="2dp">
+    android:layout_margin="2dp"
+    app:cardPreventCornerOverlap="true">
 
     <RelativeLayout
         android:id="@+id/rlTanggal"
         android:layout_width="match_parent"
         android:layout_height="90dp"
         android:scaleType="centerCrop"
-        android:background="@drawable/backgroundwhitedate"
         android:orientation="vertical"
         android:clickable="true"
         style="@style/ImageStyle2"
@@ -33,7 +32,6 @@
             android:layout_marginEnd="10dp"
             android:layout_marginBottom="10dp"
             android:text="10"
-
             android:textColor="#757575"
             android:textFontWeight="200"
             android:textSize="14sp"

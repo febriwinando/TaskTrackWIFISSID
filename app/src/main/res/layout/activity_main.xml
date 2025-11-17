@@ -41,7 +41,8 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintWidth_percent="0.46"
                 android:layout_marginStart="10dp"
-                android:layout_marginTop="10dp">
+                android:layout_marginTop="10dp"
+                >
 
                 <RelativeLayout
                     android:layout_width="match_parent"

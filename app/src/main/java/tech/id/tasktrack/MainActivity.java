@@ -43,11 +43,12 @@ public class MainActivity extends AppCompatActivity {
     private static final int REQ_BACKGROUND_LOCATION = 1002;
     private static final int REQ_NOTIFICATION = 1003;
     ApiService api;
-    SessionManager session;
     RecyclerView rvSchedule;
     TodayScheduleAdapter adapter;
     ProgressBar progressBar;
     ImageView ivLoadSchedule;
+    SessionManager session;
+
     int pegawaiId;
     DatabaseHelper dbHelper;
     String today;

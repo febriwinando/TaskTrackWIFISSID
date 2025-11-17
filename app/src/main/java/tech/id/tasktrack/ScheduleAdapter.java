@@ -1,28 +1,36 @@
 package tech.id.tasktrack;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
+
+import tech.id.tasktrack.model.Schedule;
 
 public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.GridViewHolder> {
     public final static Locale localeID = new Locale("in", "ID");
+    List<Schedule> schedules;
+    ArrayList<String> tanggalCalendar = new ArrayList<>();
+    ArrayList<String> tanggalJadwal = new ArrayList<>();
 
-    static ArrayList<String> tanggalCalendar = new ArrayList<>();
-    static ArrayList<String> tanggalJadwal = new ArrayList<>();
     public static SimpleDateFormat BULAN = new SimpleDateFormat("MM", localeID);
     public static SimpleDateFormat TAHUN = new SimpleDateFormat("yyyy", localeID);
     public void printDatesInMonth(int year, int month) {
+
         tanggalCalendar.clear();
         tanggalJadwal.clear();
 
@@ -50,15 +58,16 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.GridVi
             tanggalJadwal.add(fmtJadwalSift.format(cal.getTime()));
             cal.add(Calendar.DAY_OF_MONTH, 1);
         }
+
     }
 
-    public ScheduleAdapter(Context context) {
+    public ScheduleAdapter(Context context, List<Schedule> schedules, int year, int month) {
 
+        this.schedules = schedules;
 
-        int bulan = Integer.parseInt(BULAN.format(new Date()));
-        int tahun = Integer.parseInt(TAHUN.format(new Date()));
-
-        printDatesInMonth(tahun, bulan);
+        tanggalCalendar = new ArrayList<>();
+        tanggalJadwal = new ArrayList<>();
+        printDatesInMonth(year, month);
 
     }
 
@@ -71,7 +80,27 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.GridVi
 
     @Override
     public void onBindViewHolder(@NonNull GridViewHolder holder, int position) {
-        holder.tanggal.setText(tanggalCalendar.get(position));
+
+        String tanggal = tanggalJadwal.get(position);
+        holder.txtTanggal.setText(tanggalCalendar.get(position));
+
+        boolean adaJadwal = false;
+
+        for (Schedule s : schedules) {
+            if (s.tanggal.equals(tanggal)) {
+                adaJadwal = true;
+                break;
+            }
+        }
+
+        if (adaJadwal) {
+            holder.cvScheduleList.setBackgroundResource(R.drawable.bg_card);
+            holder.txtTanggal.setTextColor(
+                    ContextCompat.getColor(holder.itemView.getContext(), R.color.white)
+            );
+        } else {
+            holder.cvScheduleList.setBackgroundResource(R.drawable.bg_card_none);
+        }
     }
 
     @Override
@@ -80,11 +109,13 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.GridVi
     }
 
     public class GridViewHolder extends RecyclerView.ViewHolder {
-        TextView tanggal;
+        TextView txtTanggal;
+        CardView cvScheduleList;
         public GridViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            tanggal = itemView.findViewById(R.id.txtTanggal);
+            txtTanggal = itemView.findViewById(R.id.txtTanggal);
+            cvScheduleList = itemView.findViewById(R.id.cvScheduleList);
 
         }
     }
