@@ -54,8 +54,9 @@ public class MainActivity extends AppCompatActivity {
     ScheduleAdapter adapter;
     ProgressBar progressBar;
     ImageView ivLoadSchedule;
-
+    int pegawaiId;
     DatabaseHelper dbHelper;
+    String today;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-
+        today = new java.text.SimpleDateFormat("yyyy-MM-dd").format(new java.util.Date());
         progressBar = findViewById(R.id.pgbLoadSchedule);
         rvSchedule = findViewById(R.id.rvSchedule);
         rvSchedule.setLayoutManager(new LinearLayoutManager(this));
@@ -80,6 +81,8 @@ public class MainActivity extends AppCompatActivity {
 
         api = ApiClient.getClient().create(ApiService.class);
         session = new SessionManager(this);
+        pegawaiId = session.getPegawaiId();
+
         Pegawai p = dbHelper.getPegawai();
 
         ivLoadSchedule.setOnClickListener(new View.OnClickListener() {
@@ -89,13 +92,18 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-//        loadPegawai();
+        List<Schedule> localSchedules = dbHelper.getSchedulesByTanggal(pegawaiId, today);
 
-//        btnLogout.setOnClickListener(v -> logout());
+        if (!localSchedules.isEmpty()) {
+            adapter = new ScheduleAdapter(MainActivity.this, localSchedules);
+            rvSchedule.setAdapter(adapter);
+
+            Toast.makeText(MainActivity.this, "Offline mode: data lokal ditampilkan", Toast.LENGTH_SHORT).show();
+        }
+
     }
 
     private void loadSchedule() {
-        int pegawaiId = session.getPegawaiId();
         String token = session.getToken();
         ivLoadSchedule.setVisibility(View.INVISIBLE);
         progressBar.setVisibility(View.VISIBLE);
@@ -112,12 +120,15 @@ public class MainActivity extends AppCompatActivity {
 
                             // SIMPAN KE SQLITE
                             dbHelper.insertSchedule(schedules);
-                            adapter = new ScheduleAdapter(MainActivity.this, schedules);
+
+                            List<Schedule> todaySchedules = filterToday(schedules);
+
+                            adapter = new ScheduleAdapter(MainActivity.this, todaySchedules);
                             rvSchedule.setAdapter(adapter);
 
                         } else {
                             // Jika API gagal, ambil dari database lokal
-                            List<Schedule> localSchedules = dbHelper.getSchedulesByPegawai(pegawaiId);
+                            List<Schedule> localSchedules = dbHelper.getSchedulesByTanggal(pegawaiId, today);
 
                             if (!localSchedules.isEmpty()) {
 //                                adapter.setData(localSchedules);
@@ -138,7 +149,9 @@ public class MainActivity extends AppCompatActivity {
                         progressBar.setVisibility(View.GONE);
 
                         // Ambil dari SQLite saat offline
-                        List<Schedule> localSchedules = dbHelper.getSchedulesByPegawai(pegawaiId);
+                        List<Schedule> localSchedules = dbHelper.getSchedulesByTanggal(pegawaiId, today);
+
+                        adapter = new ScheduleAdapter(MainActivity.this, localSchedules);
                         rvSchedule.setAdapter(adapter);
 
                         if (!localSchedules.isEmpty()) {
@@ -166,6 +179,21 @@ public class MainActivity extends AppCompatActivity {
             checkFineLocationPermission();
         }
     }
+
+    private List<Schedule> filterToday(List<Schedule> schedules) {
+
+
+        List<Schedule> filtered = new java.util.ArrayList<>();
+
+        for (Schedule s : schedules) {
+            if (s.tanggal != null && s.tanggal.equals(today)) {
+                filtered.add(s);
+            }
+        }
+
+        return filtered;
+    }
+
 
     private void checkFineLocationPermission() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)

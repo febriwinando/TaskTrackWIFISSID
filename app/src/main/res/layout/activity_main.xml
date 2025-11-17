@@ -118,7 +118,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Task Today"
-            android:textSize="18dp"
+            android:textSize="20dp"
+            android:textColor="@color/tema"
             android:layout_marginStart="10dp"
             android:textStyle="bold"/>
 

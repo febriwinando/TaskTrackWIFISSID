@@ -160,6 +160,57 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return list;
     }
 
+    public List<Schedule> getSchedulesByTanggal(int pegawaiId, String tanggal) {
+        List<Schedule> list = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.rawQuery(
+                "SELECT * FROM " + TABLE_SCHEDULE +
+                        " WHERE pegawai_id = ? AND tanggal = ? " +
+                        " ORDER BY tanggal ASC",
+                new String[]{ String.valueOf(pegawaiId), tanggal }
+        );
+
+        if (cursor.moveToFirst()) {
+            do {
+                Schedule sc = new Schedule();
+
+                sc.id = cursor.getInt(cursor.getColumnIndexOrThrow("id"));
+                sc.tanggal = cursor.getString(cursor.getColumnIndexOrThrow("tanggal"));
+
+                // Pegawai
+                Pegawai pg = new Pegawai();
+                pg.id = cursor.getInt(cursor.getColumnIndexOrThrow("pegawai_id"));
+                pg.name = cursor.getString(cursor.getColumnIndexOrThrow("pegawai_name"));
+                sc.pegawai = pg;
+
+                // Kegiatan
+                Kegiatan kg = new Kegiatan();
+                kg.id = cursor.getInt(cursor.getColumnIndexOrThrow("kegiatan_id"));
+                kg.task = cursor.getString(cursor.getColumnIndexOrThrow("task"));
+                kg.keterangan = cursor.getString(cursor.getColumnIndexOrThrow("kegiatan_keterangan"));
+                sc.kegiatan = kg;
+
+                // Lokasi
+                Lokasi lk = new Lokasi();
+                lk.id = cursor.getInt(cursor.getColumnIndexOrThrow("lokasi_id"));
+                lk.building = cursor.getString(cursor.getColumnIndexOrThrow("building"));
+                lk.floor = cursor.getString(cursor.getColumnIndexOrThrow("floor"));
+                lk.ssid = cursor.getString(cursor.getColumnIndexOrThrow("ssid"));
+                sc.lokasi = lk;
+
+                sc.keterangan = cursor.getString(cursor.getColumnIndexOrThrow("keterangan"));
+
+                list.add(sc);
+
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        return list;
+    }
+
+
     // --------------------------------------------------------------------
     // INSERT DATA PEGAWAI
     // --------------------------------------------------------------------

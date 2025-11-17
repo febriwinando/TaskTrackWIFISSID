@@ -30,10 +30,8 @@ public static class ViewHolder extends RecyclerView.ViewHolder {
 
     public ViewHolder(View itemView) {
         super(itemView);
-        tvTanggal = itemView.findViewById(R.id.tvTanggal);
         tvTask = itemView.findViewById(R.id.tvTask);
         tvLokasi = itemView.findViewById(R.id.tvLokasi);
-        tvKeterangan = itemView.findViewById(R.id.tvKeterangan);
     }
 }
 
@@ -47,21 +45,15 @@ public ScheduleAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, 
 public void onBindViewHolder(ScheduleAdapter.@NonNull ViewHolder holder, int position) {
     Schedule item = list.get(position);
 
-    Log.d("Scedule", String.valueOf(item.kegiatan));
-    holder.tvTanggal.setText(item.tanggal);
-
-    holder.tvTask.setText(
-            "Task: " + (item.kegiatan != null ? item.kegiatan.task : "-")
+    holder.tvTask.setText((item.kegiatan != null ? item.kegiatan.task : "-")
     );
 
     holder.tvLokasi.setText(
-            "Lokasi: " +
                     (item.lokasi != null ? item.lokasi.building : "-") +
                     " - " +
                     (item.lokasi != null ? item.lokasi.floor : "-")
     );
 
-    holder.tvKeterangan.setText("Keterangan: " + item.keterangan);
 }
 
 @Override
