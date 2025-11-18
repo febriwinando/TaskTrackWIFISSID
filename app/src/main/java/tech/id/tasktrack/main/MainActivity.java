@@ -1,4 +1,4 @@
-package tech.id.tasktrack;
+package tech.id.tasktrack.main;
 
 import android.Manifest;
 import android.content.Intent;
@@ -7,7 +7,6 @@ import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -34,12 +33,15 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import tech.id.tasktrack.dbase.DatabaseHelper;
+import tech.id.tasktrack.R;
 import tech.id.tasktrack.api.ApiClient;
 import tech.id.tasktrack.api.ApiService;
 import tech.id.tasktrack.api.SessionManager;
 import tech.id.tasktrack.model.Pegawai;
 import tech.id.tasktrack.model.Schedule;
 import tech.id.tasktrack.model.ScheduleResponse;
+import tech.id.tasktrack.schedule.ScheduleActivity;
 
 public class MainActivity extends AppCompatActivity {
 

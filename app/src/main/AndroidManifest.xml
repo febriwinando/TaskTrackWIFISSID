@@ -24,10 +24,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TaskTrack">
         <activity
-            android:name=".ScheduleActivity"
+            android:name=".schedule.ScheduleActivity"
             android:exported="false" />
         <activity
-            android:name=".MainActivity"
+            android:name=".main.MainActivity"
             android:exported="false" />
         <activity
             android:name=".login.LoginActivity"
@@ -42,7 +42,7 @@
         </activity>
 
         <service
-            android:name=".WifiMonitorService"
+            android:name=".main.WifiMonitorService"
             android:enabled="true"
             android:exported="false"
             android:foregroundServiceType="dataSync" />

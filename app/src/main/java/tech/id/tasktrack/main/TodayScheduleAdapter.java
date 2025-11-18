@@ -1,9 +1,10 @@
-package tech.id.tasktrack;
+package tech.id.tasktrack.main;
 
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -12,6 +13,7 @@ import org.jspecify.annotations.NonNull;
 
 import java.util.List;
 
+import tech.id.tasktrack.R;
 import tech.id.tasktrack.model.Schedule;
 
 public class TodayScheduleAdapter extends RecyclerView.Adapter<TodayScheduleAdapter.ViewHolder> {
@@ -26,11 +28,15 @@ public TodayScheduleAdapter(Context context, List<Schedule> list) {
 
 public static class ViewHolder extends RecyclerView.ViewHolder {
     TextView tvTanggal, tvTask, tvLokasi, tvKeterangan;
+    ImageView ivUnChecked;
 
     public ViewHolder(View itemView) {
         super(itemView);
+
         tvTask = itemView.findViewById(R.id.tvTask);
         tvLokasi = itemView.findViewById(R.id.tvLokasi);
+        ivUnChecked = itemView.findViewById(R.id.ivUnChecked);
+
     }
 }
 
@@ -52,6 +58,14 @@ public void onBindViewHolder(TodayScheduleAdapter.@NonNull ViewHolder holder, in
                     " - " +
                     (item.lokasi != null ? item.lokasi.floor : "-")
     );
+
+    holder.ivUnChecked.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+
+        }
+    });
+
 
 }
 

@@ -10,46 +10,95 @@
         android:padding="10dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="match_parent"
+
+        <TableLayout
+            android:id="@+id/tlTaskToday"
+            android:layout_below="@id/tvTask"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_centerVertical="true">
+
+            <TableRow
+                android:layout_marginBottom="5dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/location"
+                    android:background="@drawable/backgroundnavbar"
+                    android:layout_marginEnd="5dp"
+                    />
+
+                <TextView
+                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/tvTask"
+                    android:textStyle="bold"
+                    android:text="Task: Monitoring WiFi"
+                    android:textSize="18sp"/>
+
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                >
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/wifi"
+                    android:background="@drawable/backgroundnavbar"
+                    android:layout_marginEnd="5dp"
+                    app:tint="@color/white"
+                    />
+
+
+
+                <TextView
+                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/tvLokasi"
+                    android:text="Lokasi: Building A - Floor 2"
+                    android:textSize="16sp"
+                    android:textStyle="normal"/>
+
+            </TableRow>
+        </TableLayout>
+
+        <RelativeLayout
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@+id/tlTaskToday"
+            android:layout_alignParentEnd="true"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/tvTask"
-                android:textStyle="bold"
-                android:text="Task: Monitoring WiFi"
-                android:textSize="18sp"/>
+            <ImageView
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:id="@+id/ivUnChecked"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@drawable/checked_non"
+                android:layout_marginEnd="10dp"/>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/tvLokasi"
-                android:text="Lokasi: Building A - Floor 2"
-                android:textSize="16sp"
-                android:textStyle="normal"
-                android:layout_marginTop="3dp"/>
-        </LinearLayout>
+            <ImageView
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:id="@+id/ivChecked"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@drawable/checked"
+                android:visibility="gone"
+                android:layout_marginEnd="10dp"/>
 
-        <ImageView
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:id="@+id/ivUnChecked"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:src="@drawable/checked_non"
-            android:layout_marginEnd="10dp"/>
-
-        <ImageView
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:id="@+id/ivChecked"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:src="@drawable/checked"
-            android:visibility="gone"
-            android:layout_marginEnd="10dp"/>
+        </RelativeLayout>
     </RelativeLayout>
 </androidx.cardview.widget.CardView>

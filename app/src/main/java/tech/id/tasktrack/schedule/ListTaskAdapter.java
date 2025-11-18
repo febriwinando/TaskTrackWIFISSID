@@ -1,4 +1,4 @@
-package tech.id.tasktrack;
+package tech.id.tasktrack.schedule;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -9,9 +9,9 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import tech.id.tasktrack.R;
 import tech.id.tasktrack.model.Schedule;
 
 public class ListTaskAdapter extends RecyclerView.Adapter<ListTaskAdapter.GridViewHolder>{
@@ -37,7 +37,7 @@ public class ListTaskAdapter extends RecyclerView.Adapter<ListTaskAdapter.GridVi
         Schedule schedule = schedules.get(position);
 
         holder.tvTask.setText(schedule.kegiatan.task);
-        holder.tvLokasi.setText(schedule.lokasi.building+ " - " +schedule.lokasi.floor +" - "+schedule.lokasi.building+ " - " +schedule.lokasi.floor);
+        holder.tvLokasi.setText(schedule.lokasi.building+ " - " +schedule.lokasi.floor);
         holder.tvSSID.setText(schedule.lokasi.ssid+ " - " +schedule.lokasi.ip_wifi);
 
     }

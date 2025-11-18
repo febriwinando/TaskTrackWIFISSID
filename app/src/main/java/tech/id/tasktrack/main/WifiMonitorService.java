@@ -1,4 +1,4 @@
-package tech.id.tasktrack;
+package tech.id.tasktrack.main;
 
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -19,6 +19,9 @@ import androidx.core.app.NotificationCompat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+
+import tech.id.tasktrack.dbase.DatabaseHelper;
+import tech.id.tasktrack.R;
 
 
 public class WifiMonitorService extends Service {

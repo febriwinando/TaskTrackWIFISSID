@@ -1,19 +1,15 @@
-package tech.id.tasktrack;
+package tech.id.tasktrack.schedule;
 
 import android.app.Dialog;
-import android.database.Cursor;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.activity.OnBackPressedCallback;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -29,8 +25,8 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
+import tech.id.tasktrack.dbase.DatabaseHelper;
+import tech.id.tasktrack.R;
 import tech.id.tasktrack.api.ApiClient;
 import tech.id.tasktrack.api.ApiService;
 import tech.id.tasktrack.api.SessionManager;
