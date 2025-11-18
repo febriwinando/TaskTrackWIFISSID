@@ -235,9 +235,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     // GET data pegawai
-    public Pegawai getPegawai() {
+    public Pegawai getPegawai(int id) {
         SQLiteDatabase db = this.getReadableDatabase();
-        String query = "SELECT * FROM " + TABLE_PEGAWAI + " LIMIT 1";
+        String query = "SELECT * FROM " + TABLE_PEGAWAI + " WHERE id = "+id+" LIMIT 1";
 
         var cursor = db.rawQuery(query, null);
         if (cursor.moveToFirst()) {
@@ -261,6 +261,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
         return null;
     }
+
     public void insertWifiLog(String timestamp, String ssid, String ip) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();

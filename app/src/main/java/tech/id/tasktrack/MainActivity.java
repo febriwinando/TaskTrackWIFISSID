@@ -10,6 +10,7 @@ import android.provider.Settings;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -24,6 +25,8 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.bumptech.glide.Glide;
 
 import java.util.List;
 
@@ -53,6 +56,8 @@ public class MainActivity extends AppCompatActivity {
     DatabaseHelper dbHelper;
     String today;
     CardView cvSchedule;
+    TextView tvNamaPegawai;
+    ImageView ivFotoProfil;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,6 +76,8 @@ public class MainActivity extends AppCompatActivity {
         rvSchedule.setLayoutManager(new LinearLayoutManager(this));
         ivLoadSchedule = findViewById(R.id.ivLoadSchedule);
         cvSchedule = findViewById(R.id.cvSchedule);
+        tvNamaPegawai = findViewById(R.id.tvNamaPegawai);
+        ivFotoProfil = findViewById(R.id.ivFotoProfil);
 
         checkNotificationPermission();
         dbHelper = new DatabaseHelper(this);
@@ -87,7 +94,17 @@ public class MainActivity extends AppCompatActivity {
         session = new SessionManager(this);
         pegawaiId = session.getPegawaiId();
 
-        Pegawai p = dbHelper.getPegawai();
+
+
+        Pegawai p = dbHelper.getPegawai(pegawaiId);
+
+        tvNamaPegawai.setText(p.name);
+        Glide.with(MainActivity.this)
+                .load("http://172.15.1.239:8000/storage/"+p.foto)
+                .circleCrop()
+                .placeholder(R.drawable.username)  // tampilkan gambar default saat loading
+                .error(R.drawable.username)        // jika gagal load
+                .into(ivFotoProfil);
 
         ivLoadSchedule.setOnClickListener(new View.OnClickListener() {
             @Override
