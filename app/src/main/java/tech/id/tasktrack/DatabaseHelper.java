@@ -111,6 +111,50 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
+    public void insertScheduleByMonth(List<Schedule> schedules, int bulan, int tahun) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        db.beginTransaction();
+        try {
+            // Format tanggal sqlite = yyyy-MM-dd
+            String start = String.format("%04d-%02d-01", tahun, bulan);
+            String end = String.format("%04d-%02d-31", tahun, bulan);
+            // Hapus hanya data bulan & tahun tersebut
+            db.delete(TABLE_SCHEDULE,
+                    "tanggal >= ? AND tanggal <= ?",
+                    new String[]{ start, end }
+            );
+
+            // Insert ulang data API ke DB
+            for (Schedule s : schedules) {
+                ContentValues cv = new ContentValues();
+                cv.put("id", s.id);
+                cv.put("tanggal", s.tanggal);
+
+                cv.put("pegawai_id", s.pegawai.id);
+                cv.put("pegawai_name", s.pegawai.name);
+
+                cv.put("kegiatan_id", s.kegiatan.id);
+                cv.put("task", s.kegiatan.task);
+                cv.put("kegiatan_keterangan", s.kegiatan.keterangan);
+
+                cv.put("lokasi_id", s.lokasi.id);
+                cv.put("building", s.lokasi.building);
+                cv.put("floor", s.lokasi.floor);
+                cv.put("ssid", s.lokasi.ssid);
+
+                cv.put("keterangan", s.keterangan);
+
+                db.insert(TABLE_SCHEDULE, null, cv);
+            }
+
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+        }
+    }
+
+
     // Ambil data berdasarkan pegawai
     public List<Schedule> getSchedulesByPegawai(int pegawaiId) {
         List<Schedule> list = new ArrayList<>();

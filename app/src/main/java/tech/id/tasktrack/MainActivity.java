@@ -178,7 +178,6 @@ public class MainActivity extends AppCompatActivity {
                             Toast.makeText(MainActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_LONG).show();
                         }
                         ivLoadSchedule.setVisibility(View.VISIBLE);
-
                     }
                 });
     }
