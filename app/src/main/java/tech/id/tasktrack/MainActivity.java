@@ -7,6 +7,7 @@ import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -119,6 +120,7 @@ public class MainActivity extends AppCompatActivity {
             adapter = new TodayScheduleAdapter(MainActivity.this, localSchedules);
             rvSchedule.setAdapter(adapter);
         }
+
 
     }
 

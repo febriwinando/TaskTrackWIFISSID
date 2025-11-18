@@ -1,15 +1,19 @@
 package tech.id.tasktrack;
 
+import android.app.Dialog;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.activity.OnBackPressedCallback;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -25,6 +29,8 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 import tech.id.tasktrack.api.ApiClient;
 import tech.id.tasktrack.api.ApiService;
 import tech.id.tasktrack.api.SessionManager;
@@ -143,7 +149,51 @@ public class ScheduleActivity extends AppCompatActivity {
 
         rvSchedule.setLayoutManager(new GridLayoutManager(this, 4));
         rvSchedule.setAdapter(adapter);
+
+        adapter.setOnItemClickCallback(new ScheduleAdapter.OnItemClickCallback() {
+            @Override
+            public void onItemClicked(String tanggal, boolean status) {
+                if (status){
+                    viewJadwalKerja(tanggal);
+                }else{
+                    Toast.makeText(ScheduleActivity.this, "Tidak ada jadwal di tanggal ini", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
     }
+
+
+    public void viewJadwalKerja(String tanggal){
+
+        Dialog dialogJadwalKerja = new Dialog(ScheduleActivity.this, R.style.DialogStyle);
+        dialogJadwalKerja.setContentView(R.layout.view_list_task);
+        dialogJadwalKerja.setCancelable(true);
+
+        RecyclerView rvTaskByDate= dialogJadwalKerja.findViewById(R.id.rvTaskByDate);
+        ImageView ivCloseListTask= dialogJadwalKerja.findViewById(R.id.ivCloseListTask);
+        rvTaskByDate.setHasFixedSize(false);
+
+//        Toast.makeText(this, pegawaiId+" - "+tanggal, Toast.LENGTH_SHORT).show();
+
+        List<Schedule> localSchedules = db.getSchedulesByTanggal(pegawaiId, tanggal);
+        rvTaskByDate.setLayoutManager(new GridLayoutManager(ScheduleActivity.this, 1));
+
+        ListTaskAdapter listTaskAdapter = new ListTaskAdapter(localSchedules, ScheduleActivity.this);
+
+
+        rvTaskByDate.setAdapter(listTaskAdapter);
+
+        ivCloseListTask.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialogJadwalKerja.dismiss();
+            }
+        });
+
+        dialogJadwalKerja.show();
+    }
+
 
 
     private String getNamaBulan(int month) {

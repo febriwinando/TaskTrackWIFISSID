@@ -8,6 +8,7 @@
     android:id="@+id/cvScheduleList"
     app:cardCornerRadius="10dp"
     android:layout_margin="2dp"
+    android:clickable="true"
     app:cardPreventCornerOverlap="true">
 
     <RelativeLayout

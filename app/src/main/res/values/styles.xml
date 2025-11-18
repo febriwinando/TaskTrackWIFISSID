@@ -9,4 +9,11 @@
     <style name="ImageStyle2">
         <item name="cornerSize">10%</item>
     </style>
+
+    <style name="DialogStyle" parent="Theme.AppCompat.Dialog">
+        <item name="android:windowMinWidthMinor">100%</item>
+        <item name="android:windowMinWidthMajor">100%</item>
+        <item name="android:windowBackground">#00437B94</item>
+    </style>
+
 </resources>
