@@ -107,7 +107,7 @@ public class WifiMonitorService extends Service {
         Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setContentTitle("WiFi Aktif: " + ssid)
                 .setContentText("Terakhir dicek: " + time)
-                .setSmallIcon(R.drawable.ic_launcher_foreground)
+                .setSmallIcon(R.drawable.logott)
                 .setOngoing(true)
                 .build();
 

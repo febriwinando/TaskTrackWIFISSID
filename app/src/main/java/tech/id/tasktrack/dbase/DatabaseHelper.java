@@ -61,8 +61,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "building TEXT, " +
                 "floor TEXT, " +
                 "ssid TEXT, " +
-                "keterangan TEXT" +
+                "keterangan TEXT, " +
+                "created_by INTEGER, " +
+                "created_ip TEXT, " +
+                "updated_by INTEGER, " +
+                "updated_ip TEXT, " +
+                "verifikator_id INTEGER, " +
+                "verifikasi_pegawai TEXT, " +        // 'ya' atau 'tidak'
+                "verifikasi_verifikator TEXT" +      // 'ya' atau 'tidak'
                 ")";
+
         db.execSQL(CREATE_SCHEDULE_TABLE);
     }
 
@@ -83,8 +91,30 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         try {
             db.delete(TABLE_SCHEDULE, null, null); // bersihkan data lama
 
+//            for (Schedule s : schedules) {
+//                ContentValues cv = new ContentValues();
+//                cv.put("id", s.id);
+//                cv.put("tanggal", s.tanggal);
+//
+//                cv.put("pegawai_id", s.pegawai.id);
+//                cv.put("pegawai_name", s.pegawai.name);
+//
+//                cv.put("kegiatan_id", s.kegiatan.id);
+//                cv.put("task", s.kegiatan.task);
+//                cv.put("kegiatan_keterangan", s.kegiatan.keterangan);
+//
+//                cv.put("lokasi_id", s.lokasi.id);
+//                cv.put("building", s.lokasi.building);
+//                cv.put("floor", s.lokasi.floor);
+//                cv.put("ssid", s.lokasi.ssid);
+//
+//                cv.put("keterangan", s.keterangan);
+//
+//                db.insert(TABLE_SCHEDULE, null, cv);
+//            }
             for (Schedule s : schedules) {
                 ContentValues cv = new ContentValues();
+
                 cv.put("id", s.id);
                 cv.put("tanggal", s.tanggal);
 
@@ -102,8 +132,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
                 cv.put("keterangan", s.keterangan);
 
+                // Tambahan
+                cv.put("created_by", s.created_by);
+                cv.put("created_ip", s.created_ip);
+                cv.put("updated_by", s.updated_by);
+                cv.put("updated_ip", s.updated_ip);
+                cv.put("verifikator_id", s.verifikator_id);
+                cv.put("verifikasi_pegawai", s.verifikasi_pegawai);
+                cv.put("verifikasi_verifikator", s.verifikasi_verifikator);
+
                 db.insert(TABLE_SCHEDULE, null, cv);
             }
+
 
             db.setTransactionSuccessful();
         } finally {
@@ -144,6 +184,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 cv.put("ssid", s.lokasi.ssid);
 
                 cv.put("keterangan", s.keterangan);
+
+                cv.put("created_by", s.created_by);
+                cv.put("created_ip", s.created_ip);
+                cv.put("updated_by", s.updated_by);
+                cv.put("updated_ip", s.updated_ip);
+                cv.put("verifikator_id", s.verifikator_id);
+                cv.put("verifikasi_pegawai", s.verifikasi_pegawai);
+                cv.put("verifikasi_verifikator", s.verifikasi_verifikator);
+
+
 
                 db.insert(TABLE_SCHEDULE, null, cv);
             }
@@ -195,6 +245,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
                 sc.keterangan = cursor.getString(cursor.getColumnIndexOrThrow("keterangan"));
 
+                sc.created_by = cursor.getInt(cursor.getColumnIndexOrThrow("created_by"));
+                sc.created_ip = cursor.getString(cursor.getColumnIndexOrThrow("created_ip"));
+                sc.updated_by = cursor.getInt(cursor.getColumnIndexOrThrow("updated_by"));
+                sc.updated_ip = cursor.getString(cursor.getColumnIndexOrThrow("updated_ip"));
+                sc.verifikator_id = cursor.getInt(cursor.getColumnIndexOrThrow("verifikator_id"));
+                sc.verifikasi_pegawai = cursor.getString(cursor.getColumnIndexOrThrow("verifikasi_pegawai"));
+                sc.verifikasi_verifikator = cursor.getString(cursor.getColumnIndexOrThrow("verifikasi_verifikator"));
+
+
                 list.add(sc);
 
             } while (cursor.moveToNext());
@@ -245,6 +304,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
                 sc.keterangan = cursor.getString(cursor.getColumnIndexOrThrow("keterangan"));
 
+                sc.created_by = cursor.getInt(cursor.getColumnIndexOrThrow("created_by"));
+                sc.created_ip = cursor.getString(cursor.getColumnIndexOrThrow("created_ip"));
+                sc.updated_by = cursor.getInt(cursor.getColumnIndexOrThrow("updated_by"));
+                sc.updated_ip = cursor.getString(cursor.getColumnIndexOrThrow("updated_ip"));
+                sc.verifikator_id = cursor.getInt(cursor.getColumnIndexOrThrow("verifikator_id"));
+                sc.verifikasi_pegawai = cursor.getString(cursor.getColumnIndexOrThrow("verifikasi_pegawai"));
+                sc.verifikasi_verifikator = cursor.getString(cursor.getColumnIndexOrThrow("verifikasi_verifikator"));
+
                 list.add(sc);
 
             } while (cursor.moveToNext());
@@ -253,6 +320,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cursor.close();
         return list;
     }
+
+
+    public void updateVerifikasiPegawai(int id, int pegawaiId, String tanggal, String status) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+
+        cv.put("verifikasi_pegawai", status);
+
+        db.update(TABLE_SCHEDULE, cv,
+                "id = ? AND pegawai_id = ? AND tanggal = ?",
+                new String[]{ String.valueOf(id), String.valueOf(pegawaiId), tanggal }
+        );
+    }
+
 
 
     // --------------------------------------------------------------------
