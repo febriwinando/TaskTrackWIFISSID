@@ -31,7 +31,7 @@ public class WifiMonitorService extends Service {
     private DatabaseHelper dbHelper;
 
     // interval 15 menit
-    private static final int INTERVAL = 15 * 60 * 1000;
+    private static final int INTERVAL = 1 * 60 * 1000;
     private static final String CHANNEL_ID = "wifi_monitor_channel";
 
     @Override

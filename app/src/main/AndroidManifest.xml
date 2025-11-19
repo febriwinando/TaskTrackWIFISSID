@@ -24,6 +24,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TaskTrack">
         <activity
+            android:name=".wifilog.WifiLogActivity"
+            android:exported="false" />
+        <activity
             android:name=".schedule.ScheduleActivity"
             android:exported="false" />
         <activity

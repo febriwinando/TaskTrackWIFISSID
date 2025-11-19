@@ -14,6 +14,7 @@ import tech.id.tasktrack.model.Kegiatan;
 import tech.id.tasktrack.model.Lokasi;
 import tech.id.tasktrack.model.Pegawai;
 import tech.id.tasktrack.model.Schedule;
+import tech.id.tasktrack.wifilog.WifiLog;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "wifi_monitor.db";
@@ -80,6 +81,28 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_PEGAWAI);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_SCHEDULE);
         onCreate(db);
+    }
+
+
+    public List<WifiLog> getAllWifiLogs() {
+        List<WifiLog> list = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.rawQuery("SELECT * FROM wifi_log ORDER BY id DESC", null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                list.add(new WifiLog(
+                        cursor.getInt(cursor.getColumnIndexOrThrow("id")),
+                        cursor.getString(cursor.getColumnIndexOrThrow("timestamp")),
+                        cursor.getString(cursor.getColumnIndexOrThrow("ssid")),
+                        cursor.getString(cursor.getColumnIndexOrThrow("ip_address"))
+                ));
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        return list;
     }
 
 
@@ -326,7 +349,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
 
-        cv.put("verifikasi_pegawai", status);
+//        cv.put("verifikasi_pegawai", status);
+
+        if (status == null || status.equals("tidak")) {
+            cv.putNull("verifikasi_pegawai");
+        } else {
+            cv.put("verifikasi_pegawai", status);
+        }
 
         db.update(TABLE_SCHEDULE, cv,
                 "id = ? AND pegawai_id = ? AND tanggal = ?",

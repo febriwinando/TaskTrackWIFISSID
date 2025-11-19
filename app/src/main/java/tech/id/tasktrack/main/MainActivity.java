@@ -42,6 +42,7 @@ import tech.id.tasktrack.model.Pegawai;
 import tech.id.tasktrack.model.Schedule;
 import tech.id.tasktrack.model.ScheduleResponse;
 import tech.id.tasktrack.schedule.ScheduleActivity;
+import tech.id.tasktrack.wifilog.WifiLogActivity;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -58,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
     int pegawaiId;
     DatabaseHelper dbHelper;
     String today;
-    CardView cvSchedule;
+    CardView cvSchedule, cvWifiLog;
     TextView tvNamaPegawai;
     ImageView ivFotoProfil;
     @Override
@@ -79,6 +80,7 @@ public class MainActivity extends AppCompatActivity {
         rvSchedule.setLayoutManager(new LinearLayoutManager(this));
         ivLoadSchedule = findViewById(R.id.ivLoadSchedule);
         cvSchedule = findViewById(R.id.cvSchedule);
+        cvWifiLog = findViewById(R.id.cvWifiLog);
         tvNamaPegawai = findViewById(R.id.tvNamaPegawai);
         ivFotoProfil = findViewById(R.id.ivFotoProfil);
 
@@ -90,6 +92,14 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, ScheduleActivity.class);
                 startActivity(intent);
+            }
+        });
+
+        cvWifiLog.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent wifiLogIntent = new Intent(MainActivity.this, WifiLogActivity.class);
+                startActivity(wifiLogIntent);
             }
         });
 

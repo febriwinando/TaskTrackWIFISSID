@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.jspecify.annotations.NonNull;
 
 import java.util.List;
+import java.util.Objects;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -74,42 +75,152 @@ public class TodayScheduleAdapter extends RecyclerView.Adapter<TodayScheduleAdap
                         (item.lokasi != null ? item.lokasi.floor : "-")
         );
 
-        holder.ivUnChecked.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                holder.ivUnChecked.setVisibility(View.INVISIBLE);
-                holder.ivChecked.setVisibility(View.VISIBLE);
+        if (item.verifikasi_pegawai == null) {
+            holder.ivChecked.setVisibility(View.INVISIBLE);
+            holder.ivUnChecked.setVisibility(View.VISIBLE);
+        } else if (item.verifikasi_pegawai.equals("ya")) {
+            holder.ivChecked.setVisibility(View.VISIBLE);
+            holder.ivUnChecked.setVisibility(View.INVISIBLE);
+        } else { // "tidak"
+            holder.ivChecked.setVisibility(View.INVISIBLE);
+            holder.ivUnChecked.setVisibility(View.VISIBLE);
+        }
 
-                updateVerifikasiPegawai(item.id, item.pegawai.id,item.tanggal, "ya");
-                DatabaseHelper db = new DatabaseHelper(v.getContext());
-                db.updateVerifikasiPegawai(
-                        item.id,
-                        item.pegawai.id,
-                        item.tanggal,
-                        "ya"
-                );
-            }
-        });
+        // --- CLICK LISTENER (SAMA UNTUK KEDUA ICON) ---
+        View.OnClickListener toggleListener = v -> {
+            toggleVerifikasi(item, holder.getAdapterPosition(), v.getContext());
+        };
+
+        holder.ivChecked.setOnClickListener(toggleListener);
+        holder.ivUnChecked.setOnClickListener(toggleListener);
+//        holder.ivUnChecked.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                holder.ivUnChecked.setVisibility(View.INVISIBLE);
+//                holder.ivChecked.setVisibility(View.VISIBLE);
+//
+//                if(Objects.equals(item.verifikasi_pegawai, "ya")){
+//
+//                    updateVerifikasiPegawai(item.id, item.pegawai.id,item.tanggal, "tidak");
+//
+//                    DatabaseHelper db = new DatabaseHelper(v.getContext());
+//                    db.updateVerifikasiPegawai(
+//                            item.id,
+//                            item.pegawai.id,
+//                            item.tanggal,
+//                            "tidak"
+//                    );
+//
+//                    Log.d("Checkd Task", "tidak");
+//
+//
+//                } else if (Objects.equals(item.verifikasi_pegawai, "tidak")) {
+//                    updateVerifikasiPegawai(item.id, item.pegawai.id,item.tanggal, "ya");
+//
+//                    DatabaseHelper db = new DatabaseHelper(v.getContext());
+//                    db.updateVerifikasiPegawai(
+//                            item.id,
+//                            item.pegawai.id,
+//                            item.tanggal,
+//                            "ya"
+//                    );
+//                    Log.d("Checkd Task", "ya");
+//
+//                }else if(item.verifikasi_pegawai == null){
+//                    updateVerifikasiPegawai(item.id, item.pegawai.id,item.tanggal, "ya");
+//
+//                    DatabaseHelper db = new DatabaseHelper(v.getContext());
+//                    db.updateVerifikasiPegawai(
+//                            item.id,
+//                            item.pegawai.id,
+//                            item.tanggal,
+//                            "ya"
+//                    );
+//                    Log.d("Checkd Task", "ya");
+//
+//                }
+//
+//                notifyItemChanged(holder.getAdapterPosition());
+//
+//            }
+//        });
 
 
-        holder.ivChecked.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                holder.ivChecked.setVisibility(View.INVISIBLE);
-                holder.ivUnChecked.setVisibility(View.VISIBLE);
+//        holder.ivChecked.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                holder.ivChecked.setVisibility(View.INVISIBLE);
+//                holder.ivUnChecked.setVisibility(View.VISIBLE);
+//
+//                if(Objects.equals(item.verifikasi_pegawai, "ya")){
+//                    updateVerifikasiPegawai(item.id, item.pegawai.id,item.tanggal, "tidak");
+//
+//                    DatabaseHelper db = new DatabaseHelper(v.getContext());
+//                    db.updateVerifikasiPegawai(
+//                            item.id,
+//                            item.pegawai.id,
+//                            item.tanggal,
+//                            "tidak"
+//                    );
+//
+//                    Log.d("Checkd Task", "tidak");
+//                } else if (Objects.equals(item.verifikasi_pegawai, "tidak")) {
+//                    updateVerifikasiPegawai(item.id, item.pegawai.id,item.tanggal, "ya");
+//
+//                    DatabaseHelper db = new DatabaseHelper(v.getContext());
+//                    db.updateVerifikasiPegawai(
+//                            item.id,
+//                            item.pegawai.id,
+//                            item.tanggal,
+//                            "ya"
+//                    );
+//                    Log.d("Checkd Task", "ya");
+//
+//                }else if(item.verifikasi_pegawai == null){
+//                    updateVerifikasiPegawai(item.id, item.pegawai.id,item.tanggal, "ya");
+//
+//                    DatabaseHelper db = new DatabaseHelper(v.getContext());
+//                    db.updateVerifikasiPegawai(
+//                            item.id,
+//                            item.pegawai.id,
+//                            item.tanggal,
+//                            "ya"
+//                    );
+//                    Log.d("Checkd Task", "ya");
+//
+//                }
+//
+//                notifyItemChanged(holder.getAdapterPosition());
+//            }
+//        });
+    }
 
-                updateVerifikasiPegawai(item.id, item.pegawai.id,item.tanggal, "tidak");
 
-                DatabaseHelper db = new DatabaseHelper(v.getContext());
-                db.updateVerifikasiPegawai(
-                        item.id,
-                        item.pegawai.id,
-                        item.tanggal,
-                        "tidak"
-                );
+    private void toggleVerifikasi(Schedule item, int position, Context context) {
 
-            }
-        });
+//        Log.d("Checkd Task 1", item.verifikasi_pegawai.toString());
+        // Toggle nilai
+        if (item.verifikasi_pegawai == null) {
+            item.verifikasi_pegawai = "ya";
+        } else if (item.verifikasi_pegawai.equals("ya")) {
+            item.verifikasi_pegawai = "tidak";
+        } else {
+            item.verifikasi_pegawai = "ya";
+        }
+
+//        Log.d("Checkd Task 2", item.verifikasi_pegawai.toString());
+
+
+
+        // Update ke API
+        updateVerifikasiPegawai(item.id, item.pegawai.id, item.tanggal, item.verifikasi_pegawai);
+
+        // Update SQLite
+        DatabaseHelper db = new DatabaseHelper(context);
+        db.updateVerifikasiPegawai(item.id, item.pegawai.id, item.tanggal, item.verifikasi_pegawai);
+
+        // Refresh hanya 1 item
+        notifyItemChanged(position);
     }
 
     @Override
