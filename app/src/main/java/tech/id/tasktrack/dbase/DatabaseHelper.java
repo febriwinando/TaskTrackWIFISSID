@@ -7,8 +7,10 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import tech.id.tasktrack.model.Kegiatan;
 import tech.id.tasktrack.model.Lokasi;
@@ -89,6 +91,34 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = db.rawQuery("SELECT * FROM wifi_log ORDER BY id DESC", null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                list.add(new WifiLog(
+                        cursor.getInt(cursor.getColumnIndexOrThrow("id")),
+                        cursor.getString(cursor.getColumnIndexOrThrow("timestamp")),
+                        cursor.getString(cursor.getColumnIndexOrThrow("ssid")),
+                        cursor.getString(cursor.getColumnIndexOrThrow("ip_address"))
+                ));
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        return list;
+    }
+
+    public List<WifiLog> getTodayWifiLogs() {
+        List<WifiLog> list = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        // Ambil tanggal hari ini dalam format yyyy-MM-dd
+        String today = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                .format(new java.util.Date());
+
+        Cursor cursor = db.rawQuery(
+                "SELECT * FROM wifi_log WHERE date(timestamp) = ? ORDER BY id DESC",
+                new String[]{ today }
+        );
 
         if (cursor.moveToFirst()) {
             do {

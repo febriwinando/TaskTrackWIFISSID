@@ -6,7 +6,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".schedule.ScheduleActivity"
     android:id="@+id/main"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@color/bg_white">
 
     <RelativeLayout
         android:id="@+id/titleHeaderPd"
@@ -20,6 +21,7 @@
             android:layout_width="35dp"
             android:layout_height="35dp"
             android:layout_centerVertical="true"
+            app:tint="@color/black"
             app:srcCompat="@drawable/back"/>
 
         <TextView
@@ -30,10 +32,10 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:elevation="10dp"
-            android:text="Schedule"
+            android:text="SCHEDULE"
             android:textSize="20sp"
             android:textStyle="bold"
-            android:textColor="@color/tema"
+            android:textColor="@color/black"
             tools:ignore="UnusedAttribute" />
 
         <ImageView
@@ -43,7 +45,8 @@
             android:layout_height="35dp"
             app:srcCompat="@drawable/loadschedule"
             android:layout_marginEnd="10dp"
-            android:id="@+id/ivSyncSchedule"/>
+            android:id="@+id/ivSyncSchedule"
+            app:tint="@color/black"/>
 
         <ProgressBar
             android:layout_centerVertical="true"
@@ -65,10 +68,12 @@
         android:padding="8dp">
 
         <ImageView
+            android:background="@drawable/backgroundnavbar"
             android:id="@+id/btnPrev"
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:src="@drawable/before"
+            app:tint="@color/black"
             />
 
         <TextView
@@ -77,6 +82,7 @@
             android:textSize="20sp"
             android:textStyle="bold"
             android:text="November 2025"
+            android:textColor="@color/black"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 
@@ -85,6 +91,8 @@
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:src="@drawable/next"
+            android:background="@drawable/backgroundnavbar"
+            app:tint="@color/black"
             />
 
     </LinearLayout>

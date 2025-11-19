@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".login.LoginActivity"
+    android:background="@color/bg_white"
     android:id="@+id/main"
     >
 
@@ -61,9 +62,11 @@
             android:layout_height="wrap_content"
             android:hint="Employee ID"
             app:endIconTint="@color/black"
+            app:startIconTint="@color/black"
             app:hintAnimationEnabled="true"
             app:hintTextAppearance="@style/TextStyleInputLogin"
-            app:startIconDrawable="@drawable/username">
+            app:startIconDrawable="@drawable/username"
+            app:boxBackgroundColor="@color/white">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/tietEmployeeID"
@@ -87,8 +90,10 @@
             app:endIconMode="password_toggle"
             app:expandedHintEnabled="true"
             app:hintAnimationEnabled="true"
+            app:startIconTint="@color/black"
             app:hintTextAppearance="@style/TextStyleInputLogin"
-            app:startIconDrawable="@drawable/password">
+            app:startIconDrawable="@drawable/password"
+            app:boxBackgroundColor="@color/white">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/tietPassword"
@@ -111,7 +116,7 @@
             android:background="@drawable/backgroundnavbar"
             android:text="Sign In"
             android:textAlignment="center"
-            android:textColor="@color/white"
+            android:textColor="@color/black"
             android:textSize="16sp" />
 
         <LinearLayout
@@ -131,7 +136,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Reset Password!"
-                android:textColor="@color/tema"
+                android:textColor="@color/black"
                 android:textStyle="italic" />
         </LinearLayout>
 

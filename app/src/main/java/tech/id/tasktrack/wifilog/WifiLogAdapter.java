@@ -60,10 +60,11 @@ public class WifiLogAdapter extends RecyclerView.Adapter<WifiLogAdapter.GridView
         WifiLog item = wifiLogs.get(position);
 
         String[] dt = splitTimestamp(item.timestamp);
-
-        holder.tvTimestamp.setText("Time: "+dt[1]);
-        holder.tvSSIDLog.setText("SSID: "+item.ssid);
-        holder.tvIPWIFILog.setText("IP: "+item.ipAddress);
+        holder.tvJamLog.setText(dt[1]);
+        holder.tvMenitLog.setText(dt[2]);
+//        holder.tvTimestamp.setText("Time: "+dt[1]);
+        holder.tvSSIDLog.setText(item.ssid);
+        holder.tvIPWIFILog.setText(item.ipAddress);
 
     }
 //
@@ -103,12 +104,13 @@ public class WifiLogAdapter extends RecyclerView.Adapter<WifiLogAdapter.GridView
     }
 
     public class GridViewHolder extends RecyclerView.ViewHolder {
-        TextView tvSSIDLog, tvTimestamp, tvIPWIFILog;
+        TextView tvSSIDLog, tvTimestamp, tvIPWIFILog, tvJamLog, tvMenitLog;
         public GridViewHolder(@NonNull View itemView) {
             super(itemView);
 
             tvSSIDLog = itemView.findViewById(R.id.tvSSIDLog);
-            tvTimestamp = itemView.findViewById(R.id.tvTimestamp);
+            tvJamLog = itemView.findViewById(R.id.tvJamLog);
+            tvMenitLog = itemView.findViewById(R.id.tvMenitLog);
             tvIPWIFILog = itemView.findViewById(R.id.tvIPWIFILog);
         }
     }

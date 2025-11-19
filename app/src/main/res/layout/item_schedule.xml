@@ -5,7 +5,8 @@
     android:layout_margin="5dp"
     android:padding="12dp"
     android:elevation="4dp"
-    app:cardCornerRadius="20dp">
+    app:cardCornerRadius="20dp"
+    app:cardBackgroundColor="@color/white">
     <RelativeLayout
         android:padding="10dp"
         android:layout_width="match_parent"
@@ -39,6 +40,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/tvTask"
                     android:textStyle="bold"
+                    android:textColor="@color/black"
                     android:text="Task: Monitoring WiFi"
                     android:textSize="18sp"/>
 

@@ -1,6 +1,7 @@
 package tech.id.tasktrack.schedule;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -112,6 +113,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.GridVi
             holder.txtTanggal.setTextColor(
                     ContextCompat.getColor(holder.itemView.getContext(), R.color.white)
             );
+            holder.txtTanggal.setTypeface(null, Typeface.BOLD);
         } else {
             holder.cvScheduleList.setBackgroundResource(R.drawable.bg_card_none);
         }

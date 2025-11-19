@@ -5,57 +5,61 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:elevation="4dp"
     app:cardCornerRadius="10dp"
-    android:layout_margin="5dp">
+    android:layout_margin="5dp"
+    android:clickable="true">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:padding="10dp"
-        android:layout_marginBottom="5dp"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <LinearLayout
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="5dp"
-            android:id="@+id/clWaktuLog">
+            android:id="@+id/clWaktuLog"
+            android:background="@drawable/backgroundnavbar"
+            android:orientation="horizontal"
+            android:padding="5dp">
 
             <TextView
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
                 android:id="@+id/tvJamLog"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="24dp"
+                android:textSize="22dp"
                 android:text="12"
                 android:textStyle="bold"
-                />
-            <View
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tvJamLog"
-                android:id="@+id/vBatas"
-                android:layout_width="20dp"
-                android:layout_height="2dp"
-                android:background="@color/abuabu_font"
-                android:layout_marginBottom="2dp"
-                android:layout_marginTop="2dp"
+                android:textColor="@color/black"
                 />
             <TextView
-                app:layout_constraintTop_toBottomOf="@id/vBatas"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
+                android:id="@+id/vBatas"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:layout_marginStart="2dp"
+                android:text=":"
+                android:textSize="22dp"
+                android:layout_marginEnd="2dp"
+
+                />
+            <TextView
                 android:id="@+id/tvMenitLog"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="24dp"
+                android:textSize="22dp"
                 android:text="35"
                 android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="parent"
+                android:textColor="@color/black"
                 />
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        </LinearLayout>
 
         <LinearLayout
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
             android:layout_marginStart="10dp"
             app:layout_constraintStart_toEndOf="@+id/clWaktuLog"
             app:layout_constraintEnd_toEndOf="parent"
@@ -63,23 +67,13 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
             <TextView
-                android:textColor="@color/white"
+                android:textColor="@color/black"
                 android:textAlignment="textStart"
                 android:id="@+id/tvSSIDLog"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="18dp"
+                android:textSize="20dp"
                 android:textStyle="bold"
-                />
-
-            <TextView
-                android:textAlignment="textStart"
-                android:id="@+id/tvTimestamp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="14dp"
-                android:textStyle="bold"
-                android:textColor="@color/white"
                 />
 
             <TextView
@@ -88,8 +82,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="14dp"
-                android:textStyle="bold"
-                android:textColor="@color/white"
+                android:textStyle="italic"
+                android:textColor="@color/abuabu_font"
                 />
         </LinearLayout>
 

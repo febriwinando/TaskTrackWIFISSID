@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,10 +26,14 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.work.ExistingPeriodicWorkPolicy;
+import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkManager;
 
 import com.bumptech.glide.Glide;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -41,6 +46,7 @@ import tech.id.tasktrack.api.SessionManager;
 import tech.id.tasktrack.model.Pegawai;
 import tech.id.tasktrack.model.Schedule;
 import tech.id.tasktrack.model.ScheduleResponse;
+import tech.id.tasktrack.profile.ProfileActivity;
 import tech.id.tasktrack.schedule.ScheduleActivity;
 import tech.id.tasktrack.wifilog.WifiLogActivity;
 
@@ -62,6 +68,7 @@ public class MainActivity extends AppCompatActivity {
     CardView cvSchedule, cvWifiLog;
     TextView tvNamaPegawai;
     ImageView ivFotoProfil;
+    LinearLayout llProfile;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,6 +90,7 @@ public class MainActivity extends AppCompatActivity {
         cvWifiLog = findViewById(R.id.cvWifiLog);
         tvNamaPegawai = findViewById(R.id.tvNamaPegawai);
         ivFotoProfil = findViewById(R.id.ivFotoProfil);
+        llProfile = findViewById(R.id.llProfile);
 
         checkNotificationPermission();
         dbHelper = new DatabaseHelper(this);
@@ -100,6 +108,14 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent wifiLogIntent = new Intent(MainActivity.this, WifiLogActivity.class);
                 startActivity(wifiLogIntent);
+            }
+        });
+
+        llProfile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent profilIntent = new Intent(MainActivity.this, ProfileActivity.class);
+                startActivity(profilIntent);
             }
         });
 
@@ -272,12 +288,23 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void startWifiMonitorService() {
-        Intent serviceIntent = new Intent(this, WifiMonitorService.class);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            startForegroundService(serviceIntent);
-        } else {
-            startService(serviceIntent);
-        }
+        PeriodicWorkRequest wifiWorkRequest =
+                new PeriodicWorkRequest.Builder(WifiWorker.class, 15, TimeUnit.MINUTES)
+                        .build();
+
+        WorkManager.getInstance(this)
+                .enqueueUniquePeriodicWork(
+                        "wifi_monitor_task",
+                        ExistingPeriodicWorkPolicy.UPDATE,
+                        wifiWorkRequest
+                );
+
+//        Intent serviceIntent = new Intent(this, WifiMonitorService.class);
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//            startForegroundService(serviceIntent);
+//        } else {
+//            startService(serviceIntent);
+//        }
 //        Toast.makeText(this, "Service WiFi berjalan di background ✅", Toast.LENGTH_LONG).show();
     }
 

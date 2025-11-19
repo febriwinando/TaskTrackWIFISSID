@@ -39,7 +39,7 @@ public class WifiLogActivity extends AppCompatActivity {
 
         DatabaseHelper db = new DatabaseHelper(this);
         // load data dari sqlite
-        List<WifiLog> logs = db.getAllWifiLogs();
+        List<WifiLog> logs = db.getTodayWifiLogs();
 
         rvWifiLog.setLayoutManager(new LinearLayoutManager(this));
         WifiLogAdapter adapter = new WifiLogAdapter(this, logs);
