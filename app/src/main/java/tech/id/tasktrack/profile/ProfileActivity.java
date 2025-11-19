@@ -4,9 +4,11 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.activity.OnBackPressedCallback;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -14,7 +16,12 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.bumptech.glide.Glide;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import tech.id.tasktrack.R;
+import tech.id.tasktrack.api.ApiClient;
+import tech.id.tasktrack.api.ApiService;
 import tech.id.tasktrack.api.SessionManager;
 import tech.id.tasktrack.dbase.DatabaseHelper;
 import tech.id.tasktrack.main.MainActivity;
@@ -24,7 +31,7 @@ public class ProfileActivity extends AppCompatActivity {
 
     SessionManager session;
     DatabaseHelper dbHelper;
-
+    ApiService api;
     ImageView ivBackProfile, ivFotoProfil;
     int pegawaiId;
     TextView tvNameProfile, tvNIK, tvEmployeID, tvEmail, tvPhoneNumber;
@@ -47,6 +54,7 @@ public class ProfileActivity extends AppCompatActivity {
         tvEmail = findViewById(R.id.tvEmail);
         tvPhoneNumber = findViewById(R.id.tvPhoneNumber);
 
+        api = ApiClient.getClient().create(ApiService.class);
         dbHelper = new DatabaseHelper(this);
         session = new SessionManager(this);
         pegawaiId = session.getPegawaiId();
@@ -80,5 +88,24 @@ public class ProfileActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+
+    private void logout() {
+        String token = session.getToken();
+
+        api.logout(token).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
+                session.clearSession();
+                Toast.makeText(ProfileActivity.this, "Logged out", Toast.LENGTH_SHORT).show();
+                finish();
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
+                Toast.makeText(ProfileActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }

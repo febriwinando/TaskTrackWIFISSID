@@ -141,6 +141,68 @@
 //}
 
 
+//
+//package tech.id.tasktrack.main;
+//
+//import android.app.Notification;
+//import android.app.NotificationChannel;
+//import android.app.NotificationManager;
+//import android.app.Service;
+//import android.content.Intent;
+//import android.os.Build;
+//import android.os.IBinder;
+//
+//import androidx.annotation.Nullable;
+//import androidx.core.app.NotificationCompat;
+//import androidx.work.PeriodicWorkRequest;
+//import androidx.work.WorkManager;
+//
+//import java.util.concurrent.TimeUnit;
+//
+//import tech.id.tasktrack.R;
+//
+//public class WifiMonitorService extends Service {
+//
+//    public static final String CHANNEL_ID = "wifi_monitor_channel";
+//
+//    @Override
+//    public void onCreate() {
+//        super.onCreate();
+//        createNotificationChannel();
+//
+//        Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
+//                .setContentTitle("WiFi Tracking Active")
+//                .setContentText("Memantau koneksi WiFi setiap 15 menit")
+//                .setSmallIcon(R.drawable.logott)
+//                .build();
+//
+//        startForeground(1, notification);
+//
+////        PeriodicWorkRequest wifiWork =
+////                new PeriodicWorkRequest.Builder(WifiWorker.class, 15, TimeUnit.MINUTES)
+////                        .build();
+//
+////        WorkManager.getInstance(this).enqueue(wifiWork);
+//    }
+//
+//    @Nullable
+//    @Override
+//    public IBinder onBind(Intent intent) { return null; }
+//
+//    private void createNotificationChannel() {
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//            NotificationChannel channel =
+//                    new NotificationChannel(
+//                            CHANNEL_ID,
+//                            "WiFi Monitor Service",
+//                            NotificationManager.IMPORTANCE_LOW
+//                    );
+//            NotificationManager manager = getSystemService(NotificationManager.class);
+//            manager.createNotificationChannel(channel);
+//        }
+//    }
+//}
+
 
 package tech.id.tasktrack.main;
 
@@ -148,57 +210,111 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
+import android.net.wifi.WifiManager;
 import android.os.Build;
+import android.os.Handler;
 import android.os.IBinder;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
-import androidx.work.PeriodicWorkRequest;
-import androidx.work.WorkManager;
 
-import java.util.concurrent.TimeUnit;
+import java.util.Locale;
 
 import tech.id.tasktrack.R;
 
 public class WifiMonitorService extends Service {
 
-    public static final String CHANNEL_ID = "wifi_monitor_channel";
+    private static final String CHANNEL_ID = "wifi_monitor_channel";
+    private Handler handler = new Handler();
+    private Runnable wifiChecker;
 
     @Override
     public void onCreate() {
         super.onCreate();
         createNotificationChannel();
+        startForeground(1, createNotification("Monitoring WiFi..."));
 
-        Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
-                .setContentTitle("WiFi Tracking Active")
-                .setContentText("Memantau koneksi WiFi setiap 15 menit")
+        startWifiChecking();
+    }
+
+    private void startWifiChecking() {
+        wifiChecker = new Runnable() {
+            @Override
+            public void run() {
+
+                String ssid = getCurrentSSID();
+
+                // Debug Toast (optional)
+                // Toast.makeText(WifiMonitorService.this, "SSID: " + ssid, Toast.LENGTH_SHORT).show();
+
+                // Update notification
+                Notification notification = createNotification("Connected to: " + ssid);
+                startForeground(1, notification);
+
+                handler.postDelayed(this, (1000*60*15)); // repeat every 5 seconds
+            }
+        };
+
+        handler.post(wifiChecker);
+    }
+
+    private String getCurrentSSID() {
+        WifiManager wifiManager = (WifiManager) getApplicationContext()
+                .getSystemService(Context.WIFI_SERVICE);
+
+        String ssid = wifiManager.getConnectionInfo().getSSID();
+
+        int ip = wifiManager.getConnectionInfo().getIpAddress();
+        String ipAddress = String.format(Locale.US, "%d.%d.%d.%d",
+                (ip & 0xff), (ip >> 8 & 0xff),
+                (ip >> 16 & 0xff), (ip >> 24 & 0xff));
+
+        if (ssid == null || ssid.equals("<unknown ssid>")) {
+            return "No WiFi";
+        }
+
+        return ssid.replace("\"", "")+" - IP:"+ipAddress;
+    }
+
+    private Notification createNotification(String text) {
+        return new NotificationCompat.Builder(this, CHANNEL_ID)
+                .setContentTitle("WiFi Monitor")
+                .setContentText(text)
                 .setSmallIcon(R.drawable.logott)
+                .setOngoing(true)
                 .build();
+    }
 
-        startForeground(1, notification);
+    private void createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(
+                    CHANNEL_ID,
+                    "WiFi Monitor Service",
+                    NotificationManager.IMPORTANCE_LOW
+            );
 
-        PeriodicWorkRequest wifiWork =
-                new PeriodicWorkRequest.Builder(WifiWorker.class, 15, TimeUnit.MINUTES)
-                        .build();
+            NotificationManager manager = getSystemService(NotificationManager.class);
+            manager.createNotificationChannel(channel);
+        }
+    }
 
-        WorkManager.getInstance(this).enqueue(wifiWork);
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        return START_STICKY; // service will restart if killed
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        handler.removeCallbacks(wifiChecker);
     }
 
     @Nullable
     @Override
-    public IBinder onBind(Intent intent) { return null; }
-
-    private void createNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel =
-                    new NotificationChannel(
-                            CHANNEL_ID,
-                            "WiFi Monitor Service",
-                            NotificationManager.IMPORTANCE_LOW
-                    );
-            NotificationManager manager = getSystemService(NotificationManager.class);
-            manager.createNotificationChannel(channel);
-        }
+    public IBinder onBind(Intent intent) {
+        return null;
     }
 }

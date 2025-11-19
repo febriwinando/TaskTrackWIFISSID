@@ -148,7 +148,7 @@ public class MainActivity extends AppCompatActivity {
             adapter = new TodayScheduleAdapter(MainActivity.this, localSchedules);
             rvSchedule.setAdapter(adapter);
         }
-
+        startWifiMonitorService();
 
     }
 
@@ -288,6 +288,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void startWifiMonitorService() {
+
         PeriodicWorkRequest wifiWorkRequest =
                 new PeriodicWorkRequest.Builder(WifiWorker.class, 15, TimeUnit.MINUTES)
                         .build();
@@ -295,18 +296,35 @@ public class MainActivity extends AppCompatActivity {
         WorkManager.getInstance(this)
                 .enqueueUniquePeriodicWork(
                         "wifi_monitor_task",
-                        ExistingPeriodicWorkPolicy.UPDATE,
+                        ExistingPeriodicWorkPolicy.KEEP,
                         wifiWorkRequest
                 );
 
-//        Intent serviceIntent = new Intent(this, WifiMonitorService.class);
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-//            startForegroundService(serviceIntent);
-//        } else {
-//            startService(serviceIntent);
-//        }
-//        Toast.makeText(this, "Service WiFi berjalan di background ✅", Toast.LENGTH_LONG).show();
+        Intent service = new Intent(this, WifiMonitorService.class);
+        startForegroundService(service);
     }
+
+
+//    private void startWifiMonitorService() {
+//        PeriodicWorkRequest wifiWorkRequest =
+//                new PeriodicWorkRequest.Builder(WifiWorker.class, 1, TimeUnit.MINUTES)
+//                        .build();
+//
+//        WorkManager.getInstance(this)
+//                .enqueueUniquePeriodicWork(
+//                        "wifi_monitor_task",
+//                        ExistingPeriodicWorkPolicy.UPDATE,
+//                        wifiWorkRequest
+//                );
+//
+////        Intent serviceIntent = new Intent(this, WifiMonitorService.class);
+////        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+////            startForegroundService(serviceIntent);
+////        } else {
+////            startService(serviceIntent);
+////        }
+////        Toast.makeText(this, "Service WiFi berjalan di background ✅", Toast.LENGTH_LONG).show();
+//    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
