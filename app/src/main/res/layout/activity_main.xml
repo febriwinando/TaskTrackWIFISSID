@@ -82,7 +82,7 @@
                 android:layout_height="130dp"
                 app:cardCornerRadius="20dp"
                 android:backgroundTint="@color/tema"
-                app:layout_constraintTop_toBottomOf="@id/llCalendar"
+                app:layout_constraintTop_toBottomOf="@id/llProfile"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/cvWifiLog"
                 app:layout_constraintWidth_percent="0.46"
