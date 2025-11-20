@@ -58,8 +58,8 @@
                     android:layout_margin="10dp">
 
                     <ImageView
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
+                        android:layout_width="35dp"
+                        android:layout_height="35dp"
                         android:src="@drawable/location"
                         android:layout_alignParentEnd="true"
                         android:layout_alignParentBottom="true"
@@ -95,8 +95,8 @@
                     android:layout_margin="10dp">
 
                     <ImageView
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
+                        android:layout_width="35dp"
+                        android:layout_height="35dp"
                         android:src="@drawable/calendar"
                         android:layout_alignParentEnd="true"
                         android:layout_alignParentBottom="true"
@@ -168,5 +168,18 @@
         android:layout_marginStart="10dp"
         android:layout_marginEnd="10dp"
         android:layout_marginBottom="10dp"/>
+
+    <TextView
+        android:id="@+id/tvNoTaskToday"
+        app:layout_constraintTop_toBottomOf="@+id/rlHeaderTaskToday"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:text="No tasks for today..."
+        android:textColor="@color/abuabu_font"
+        android:textStyle="bold|italic"
+        android:visibility="invisible"
+        android:textAlignment="center"
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,8 +1,10 @@
 package tech.id.tasktrack.profile;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,6 +26,7 @@ import tech.id.tasktrack.api.ApiClient;
 import tech.id.tasktrack.api.ApiService;
 import tech.id.tasktrack.api.SessionManager;
 import tech.id.tasktrack.dbase.DatabaseHelper;
+import tech.id.tasktrack.login.LoginActivity;
 import tech.id.tasktrack.main.MainActivity;
 import tech.id.tasktrack.model.Pegawai;
 
@@ -35,6 +38,7 @@ public class ProfileActivity extends AppCompatActivity {
     ImageView ivBackProfile, ivFotoProfil;
     int pegawaiId;
     TextView tvNameProfile, tvNIK, tvEmployeID, tvEmail, tvPhoneNumber;
+    RelativeLayout rlLogoutProfil;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,6 +57,7 @@ public class ProfileActivity extends AppCompatActivity {
         tvEmployeID = findViewById(R.id.tvEmployeID);
         tvEmail = findViewById(R.id.tvEmail);
         tvPhoneNumber = findViewById(R.id.tvPhoneNumber);
+        rlLogoutProfil = findViewById(R.id.rlLogoutProfil);
 
         api = ApiClient.getClient().create(ApiService.class);
         dbHelper = new DatabaseHelper(this);
@@ -61,7 +66,8 @@ public class ProfileActivity extends AppCompatActivity {
         Pegawai p = dbHelper.getPegawai(pegawaiId);
 
 
-        tvNameProfile.setText(p.name);
+        tvNameProfile.setText(p.name.toUpperCase());
+
         Glide.with(ProfileActivity.this)
                 .load("http://172.15.1.239:8000/storage/"+p.foto)
                 .circleCrop()
@@ -88,17 +94,31 @@ public class ProfileActivity extends AppCompatActivity {
             }
         });
 
+        rlLogoutProfil.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                logout();
+            }
+        });
+
     }
 
 
-    private void logout() {
+    public void logout() {
         String token = session.getToken();
 
         api.logout(token).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
                 session.clearSession();
-                Toast.makeText(ProfileActivity.this, "Logged out", Toast.LENGTH_SHORT).show();
+                DatabaseHelper db = new DatabaseHelper(ProfileActivity.this);
+                db.clearAllTables();   // atau db.resetDatabase();
+
+                session.clearSession();
+                Intent intent = new Intent(ProfileActivity.this, LoginActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+
                 finish();
             }
 
@@ -108,4 +128,6 @@ public class ProfileActivity extends AppCompatActivity {
             }
         });
     }
+
+
 }

@@ -77,6 +77,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_SCHEDULE_TABLE);
     }
 
+    public void clearAllTables() {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        db.execSQL("DELETE FROM " + TABLE_NAME);
+        db.execSQL("DELETE FROM " + TABLE_PEGAWAI);
+        db.execSQL("DELETE FROM " + TABLE_SCHEDULE);
+
+        db.close();
+    }
+
+
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);

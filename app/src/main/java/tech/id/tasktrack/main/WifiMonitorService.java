@@ -254,7 +254,7 @@ public class WifiMonitorService extends Service {
                 Notification notification = createNotification("Connected to: " + ssid);
                 startForeground(1, notification);
 
-                handler.postDelayed(this, (1000*60*15)); // repeat every 5 seconds
+                handler.postDelayed(this, (1000*60*15));
             }
         };
 

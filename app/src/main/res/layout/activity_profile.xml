@@ -38,11 +38,22 @@
             android:textStyle="bold"
             android:textColor="@color/black"
             tools:ignore="UnusedAttribute" />
+
+        <ImageView
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:src="@drawable/edit"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            app:tint="@color/black"
+            android:layout_marginEnd="10dp"
+            />
     </RelativeLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginTop="35dp">
 
         <ImageView
             android:id="@+id/ivFotoProfil"
@@ -55,7 +66,8 @@
             />
         <TextView
             android:id="@+id/tvNameProfile"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginBottom="35dp"
             android:layout_below="@+id/ivFotoProfil"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -67,7 +79,9 @@
     </RelativeLayout>
 
     <TableLayout
-        android:layout_margin="10dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="15dp"
         android:padding="10dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -81,8 +95,8 @@
             android:layout_marginBottom="10dp">
             <ImageView
                 android:background="@drawable/backgroundnavbar"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
                 android:src="@drawable/id_card"
                 app:tint="@color/white"
                 android:layout_marginEnd="5dp"/>
@@ -91,7 +105,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:orientation="horizontal"
+                android:orientation="vertical"
                 >
 
                 <TextView
@@ -99,14 +113,14 @@
                     android:layout_height="wrap_content"
                     android:textStyle="bold"
                     android:text="ID Card "
-                    android:textSize="16dp"
+                    android:textSize="14dp"
                     android:textColor="@color/black"/>
 
                 <TextView
                     android:id="@+id/tvNIK"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="16dp"
+                    android:textSize="14dp"
                     android:textColor="@color/abuabu_font"
                     />
 
@@ -121,8 +135,8 @@
             <ImageView
                 android:background="@drawable/backgroundnavbar"
                 app:tint="@color/white"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
                 android:src="@drawable/emp_card"
                 android:layout_marginEnd="5dp"/>
 
@@ -130,7 +144,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:orientation="horizontal"
+                android:orientation="vertical"
                 >
 
                 <TextView
@@ -138,13 +152,13 @@
                     android:layout_height="wrap_content"
                     android:textStyle="bold"
                     android:text="Employee ID "
-                    android:textSize="16dp"
+                    android:textSize="14dp"
                     android:textColor="@color/black"/>
                 <TextView
                     android:id="@+id/tvEmployeID"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="16dp"
+                    android:textSize="14dp"
                     android:textColor="@color/abuabu_font"
                     />
             </LinearLayout>
@@ -158,8 +172,8 @@
             <ImageView
                 android:background="@drawable/backgroundnavbar"
                 app:tint="@color/white"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
                 android:src="@drawable/emp_card"
                 android:layout_marginEnd="5dp"/>
 
@@ -167,7 +181,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:orientation="horizontal"
+                android:orientation="vertical"
                 >
 
                 <TextView
@@ -175,13 +189,13 @@
                     android:layout_height="wrap_content"
                     android:textStyle="bold"
                     android:text="eMail "
-                    android:textSize="16dp"
+                    android:textSize="14dp"
                     android:textColor="@color/black"/>
                 <TextView
                     android:id="@+id/tvEmail"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="16dp"
+                    android:textSize="14dp"
                     android:textColor="@color/abuabu_font"
                     />
             </LinearLayout>
@@ -194,8 +208,8 @@
             <ImageView
                 android:background="@drawable/backgroundnavbar"
                 app:tint="@color/white"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
                 android:src="@drawable/phone"
                 android:layout_marginEnd="5dp"/>
 
@@ -203,7 +217,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:orientation="horizontal"
+                android:orientation="vertical"
                 >
 
                 <TextView
@@ -211,16 +225,43 @@
                     android:layout_height="wrap_content"
                     android:textStyle="bold"
                     android:text="Phone Number "
-                    android:textSize="16dp"
+                    android:textSize="14dp"
                     android:textColor="@color/black"/>
                 <TextView
                     android:id="@+id/tvPhoneNumber"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="16dp"
+                    android:textSize="14dp"
                     android:textColor="@color/abuabu_font"
                     />
             </LinearLayout>
         </TableRow>
     </TableLayout>
+
+    <RelativeLayout
+        android:id="@+id/rlLogoutProfil"
+        android:layout_margin="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/backgroundnavbar"
+        android:padding="10dp">
+        <ImageView
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/logout"
+            app:tint="@color/white"
+            android:layout_toStartOf="@+id/tvLogOut"
+            android:layout_marginEnd="5dp"
+            />
+        <TextView
+            android:id="@+id/tvLogOut"
+            android:layout_centerHorizontal="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Log Out"
+            android:textSize="20dp"
+            android:textStyle="bold"
+            android:textColor="@color/black"
+            />
+    </RelativeLayout>
 </LinearLayout>

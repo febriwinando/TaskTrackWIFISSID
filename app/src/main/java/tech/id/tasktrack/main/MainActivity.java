@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
     DatabaseHelper dbHelper;
     String today;
     CardView cvSchedule, cvWifiLog;
-    TextView tvNamaPegawai;
+    TextView tvNamaPegawai, tvNoTaskToday;
     ImageView ivFotoProfil;
     LinearLayout llProfile;
     @Override
@@ -91,6 +91,7 @@ public class MainActivity extends AppCompatActivity {
         tvNamaPegawai = findViewById(R.id.tvNamaPegawai);
         ivFotoProfil = findViewById(R.id.ivFotoProfil);
         llProfile = findViewById(R.id.llProfile);
+        tvNoTaskToday = findViewById(R.id.tvNoTaskToday);
 
         checkNotificationPermission();
         dbHelper = new DatabaseHelper(this);
@@ -145,10 +146,30 @@ public class MainActivity extends AppCompatActivity {
         List<Schedule> localSchedules = dbHelper.getSchedulesByTanggal(pegawaiId, today);
 
         if (!localSchedules.isEmpty()) {
+            tvNoTaskToday.setVisibility(View.INVISIBLE);
             adapter = new TodayScheduleAdapter(MainActivity.this, localSchedules);
             rvSchedule.setAdapter(adapter);
+        }else {
+            tvNoTaskToday.setVisibility(View.VISIBLE);
         }
+
         startWifiMonitorService();
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        List<Schedule> localSchedules = dbHelper.getSchedulesByTanggal(pegawaiId, today);
+
+        if (!localSchedules.isEmpty()) {
+            tvNoTaskToday.setVisibility(View.INVISIBLE);
+            adapter = new TodayScheduleAdapter(MainActivity.this, localSchedules);
+            rvSchedule.setAdapter(adapter);
+        }else {
+            tvNoTaskToday.setVisibility(View.VISIBLE);
+        }
 
     }
 
@@ -174,6 +195,12 @@ public class MainActivity extends AppCompatActivity {
 
                             adapter = new TodayScheduleAdapter(MainActivity.this, todaySchedules);
                             rvSchedule.setAdapter(adapter);
+                            if (todaySchedules.isEmpty()){
+                                tvNoTaskToday.setVisibility(View.VISIBLE);
+                            }else{
+                                tvNoTaskToday.setVisibility(View.INVISIBLE);
+                            }
+
 
                         } else {
                             // Jika API gagal, ambil dari database lokal
@@ -183,11 +210,14 @@ public class MainActivity extends AppCompatActivity {
 //                                adapter.setData(localSchedules);
                                 adapter = new TodayScheduleAdapter(MainActivity.this, localSchedules);
                                 rvSchedule.setAdapter(adapter);
+                                tvNoTaskToday.setVisibility(View.INVISIBLE);
 
                             } else {
+                                tvNoTaskToday.setVisibility(View.VISIBLE);
                                 Toast.makeText(MainActivity.this, "Tidak ada data", Toast.LENGTH_SHORT).show();
                             }
                         }
+
                         ivLoadSchedule.setVisibility(View.VISIBLE);
 
                     }
@@ -203,27 +233,16 @@ public class MainActivity extends AppCompatActivity {
                         rvSchedule.setAdapter(adapter);
 
                         if (!localSchedules.isEmpty()) {
+                            tvNoTaskToday.setVisibility(View.INVISIBLE);
+
                             Toast.makeText(MainActivity.this, "Offline mode: data lokal ditampilkan", Toast.LENGTH_SHORT).show();
                         } else {
+                            tvNoTaskToday.setVisibility(View.VISIBLE);
                             Toast.makeText(MainActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_LONG).show();
                         }
                         ivLoadSchedule.setVisibility(View.VISIBLE);
                     }
                 });
-    }
-    private void checkNotificationPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
-                    != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.POST_NOTIFICATIONS},
-                        REQ_NOTIFICATION);
-            } else {
-                checkFineLocationPermission();
-            }
-        } else {
-            checkFineLocationPermission();
-        }
     }
 
     private List<Schedule> filterToday(List<Schedule> schedules) {
@@ -240,6 +259,20 @@ public class MainActivity extends AppCompatActivity {
         return filtered;
     }
 
+    private void checkNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+                    != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.POST_NOTIFICATIONS},
+                        REQ_NOTIFICATION);
+            } else {
+                checkFineLocationPermission();
+            }
+        } else {
+            checkFineLocationPermission();
+        }
+    }
 
     private void checkFineLocationPermission() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
@@ -289,6 +322,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void startWifiMonitorService() {
 
+        // Pastikan Worker tetap ada 15 menit sekali (opsional)
         PeriodicWorkRequest wifiWorkRequest =
                 new PeriodicWorkRequest.Builder(WifiWorker.class, 15, TimeUnit.MINUTES)
                         .build();
@@ -300,9 +334,35 @@ public class MainActivity extends AppCompatActivity {
                         wifiWorkRequest
                 );
 
-        Intent service = new Intent(this, WifiMonitorService.class);
-        startForegroundService(service);
+        // Start ForegroundService
+//        Intent service = new Intent(this, WifiMonitorService.class);
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//            startForegroundService(service);
+//        } else {
+//            startService(service);
+//        }
     }
+
+//    private void startWifiMonitorService() {
+//
+//        PeriodicWorkRequest wifiWorkRequest =
+//                new PeriodicWorkRequest.Builder(WifiWorker.class, 15, TimeUnit.MINUTES)
+//                        .build();
+//
+//        WorkManager.getInstance(this)
+//                .enqueueUniquePeriodicWork(
+//                        "wifi_monitor_task",
+//                        ExistingPeriodicWorkPolicy.KEEP,
+//                        wifiWorkRequest
+//                );
+//
+//        Intent service = new Intent(this, WifiMonitorService.class);
+//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//                    startForegroundService(service);
+//                } else {
+//                    startService(service);
+//                }
+//    }
 
 
 //    private void startWifiMonitorService() {

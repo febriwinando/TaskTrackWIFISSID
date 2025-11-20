@@ -33,7 +33,7 @@
         <ImageView
             android:layout_width="80dp"
             android:layout_height="80dp"
-            app:srcCompat="@drawable/logotasktrack" />
+            app:srcCompat="@drawable/logott" />
 
         <TextView
             android:layout_width="match_parent"
@@ -66,7 +66,8 @@
             app:hintAnimationEnabled="true"
             app:hintTextAppearance="@style/TextStyleInputLogin"
             app:startIconDrawable="@drawable/username"
-            app:boxBackgroundColor="@color/white">
+            app:boxStrokeColor="@color/tema"
+            >
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/tietEmployeeID"
@@ -93,7 +94,9 @@
             app:startIconTint="@color/black"
             app:hintTextAppearance="@style/TextStyleInputLogin"
             app:startIconDrawable="@drawable/password"
-            app:boxBackgroundColor="@color/white">
+            app:boxStrokeColor="@color/tema"
+
+            >
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/tietPassword"
