@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.activity.OnBackPressedCallback;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -208,7 +209,7 @@ public class ScheduleActivity extends AppCompatActivity {
         api.getScheduleByMonth(token, pegawaiId, currentMonth, currentYear)
                 .enqueue(new Callback<ScheduleResponse>() {
                     @Override
-                    public void onResponse(Call<ScheduleResponse> call, Response<ScheduleResponse> response) {
+                    public void onResponse(@NonNull Call<ScheduleResponse> call, @NonNull Response<ScheduleResponse> response) {
                         pgbLoadSchedule.setVisibility(View.INVISIBLE);
 
                         if (response.isSuccessful() && response.body() != null) {
@@ -226,7 +227,7 @@ public class ScheduleActivity extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onFailure(Call<ScheduleResponse> call, Throwable t) {
+                    public void onFailure(@NonNull Call<ScheduleResponse> call, @NonNull Throwable t) {
                         pgbLoadSchedule.setVisibility(View.INVISIBLE);
                         loadCalendar(currentMonth, currentYear);
                         ivSyncSchedule.setVisibility(View.VISIBLE);

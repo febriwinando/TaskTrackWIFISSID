@@ -22,6 +22,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "wifi_monitor.db";
     private static final int DATABASE_VERSION = 1;
     private static final String TABLE_NAME = "wifi_log";
+    public static final String TABLE_USER = "user";
     public static final String TABLE_PEGAWAI = "pegawais";
     public static final String TABLE_SCHEDULE = "schedules";
     public DatabaseHelper(Context context) {
@@ -37,7 +38,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "ip_address TEXT)";
         db.execSQL(createTable);
 
-        String createPegawaiTable = "CREATE TABLE " + TABLE_PEGAWAI + " (" +
+        String createUser = "CREATE TABLE " + TABLE_USER + " (" +
                 "id INTEGER PRIMARY KEY, " +
                 "name TEXT, " +
                 "nik TEXT, " +
@@ -50,7 +51,22 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "foto TEXT" +
                 ")";
 
-        db.execSQL(createPegawaiTable);
+        db.execSQL(createUser);
+
+        String createPegawais = "CREATE TABLE " + TABLE_PEGAWAI + " (" +
+                "id INTEGER PRIMARY KEY, " +
+                "name TEXT, " +
+                "nik TEXT, " +
+                "employee_id TEXT, " +
+                "email TEXT, " +
+                "nomor_wa TEXT, " +
+                "level TEXT, " +
+                "status TEXT, " +
+                "inactive_reason TEXT, " +
+                "foto TEXT" +
+                ")";
+
+        db.execSQL(createPegawais);
 
         String CREATE_SCHEDULE_TABLE = "CREATE TABLE " + TABLE_SCHEDULE + "(" +
                 "id INTEGER PRIMARY KEY, " +
@@ -79,9 +95,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public void clearAllTables() {
         SQLiteDatabase db = this.getWritableDatabase();
-
-        db.execSQL("DELETE FROM " + TABLE_NAME);
         db.execSQL("DELETE FROM " + TABLE_PEGAWAI);
+        db.execSQL("DELETE FROM " + TABLE_NAME);
+        db.execSQL("DELETE FROM " + TABLE_USER);
         db.execSQL("DELETE FROM " + TABLE_SCHEDULE);
 
         db.close();
@@ -90,10 +106,57 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_PEGAWAI);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_USER);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_SCHEDULE);
         onCreate(db);
+    }
+
+    public void insertListScheduleEmployees(List<Schedule> schedules) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        db.beginTransaction();
+        try {
+            db.delete(TABLE_SCHEDULE, null, null); // bersihkan data lama
+
+            for (Schedule s : schedules) {
+                ContentValues cv = new ContentValues();
+
+                cv.put("id", s.id);
+                cv.put("tanggal", s.tanggal);
+
+                cv.put("pegawai_id", s.pegawai.id);
+                cv.put("pegawai_name", s.pegawai.name);
+
+                cv.put("kegiatan_id", s.kegiatan.id);
+                cv.put("task", s.kegiatan.task);
+                cv.put("kegiatan_keterangan", s.kegiatan.keterangan);
+
+                cv.put("lokasi_id", s.lokasi.id);
+                cv.put("building", s.lokasi.building);
+                cv.put("floor", s.lokasi.floor);
+                cv.put("ssid", s.lokasi.ssid);
+
+                cv.put("keterangan", s.keterangan);
+
+                // Tambahan
+                cv.put("created_by", s.created_by);
+                cv.put("created_ip", s.created_ip);
+                cv.put("updated_by", s.updated_by);
+                cv.put("updated_ip", s.updated_ip);
+                cv.put("verifikator_id", s.verifikator_id);
+                cv.put("verifikasi_pegawai", s.verifikasi_pegawai);
+                cv.put("verifikasi_verifikator", s.verifikasi_verifikator);
+
+                db.insert(TABLE_SCHEDULE, null, cv);
+            }
+
+
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+        }
     }
 
 
@@ -409,9 +472,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     // --------------------------------------------------------------------
     // INSERT DATA PEGAWAI
     // --------------------------------------------------------------------
+
     public void insertPegawai(Pegawai p) {
         SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(TABLE_PEGAWAI, null, null); // Clear old login first (opsional)
+        db.delete(TABLE_USER, null, null); // Clear old login first (opsional)
 
         ContentValues cv = new ContentValues();
         cv.put("id", p.id);
@@ -425,14 +489,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cv.put("inactive_reason", p.inactive_reason);
         cv.put("foto", p.foto);
 
-        db.insert(TABLE_PEGAWAI, null, cv);
+        db.insert(TABLE_USER, null, cv);
         db.close();
     }
 
     // GET data pegawai
     public Pegawai getPegawai(int id) {
         SQLiteDatabase db = this.getReadableDatabase();
-        String query = "SELECT * FROM " + TABLE_PEGAWAI + " WHERE id = "+id+" LIMIT 1";
+        String query = "SELECT * FROM " + TABLE_USER + " WHERE id = "+id+" LIMIT 1";
 
         var cursor = db.rawQuery(query, null);
         if (cursor.moveToFirst()) {

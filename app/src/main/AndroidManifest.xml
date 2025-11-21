@@ -24,6 +24,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TaskTrack">
         <activity
+            android:name=".verifikator.VerifikatorActivity"
+            android:exported="false" />
+        <activity
             android:name=".profile.ProfileActivity"
             android:exported="false" />
         <activity

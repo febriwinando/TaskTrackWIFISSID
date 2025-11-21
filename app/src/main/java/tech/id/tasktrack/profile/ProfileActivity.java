@@ -113,12 +113,10 @@ public class ProfileActivity extends AppCompatActivity {
                 session.clearSession();
                 DatabaseHelper db = new DatabaseHelper(ProfileActivity.this);
                 db.clearAllTables();   // atau db.resetDatabase();
-
                 session.clearSession();
                 Intent intent = new Intent(ProfileActivity.this, LoginActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
-
                 finish();
             }
 

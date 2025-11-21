@@ -15,6 +15,7 @@ import tech.id.tasktrack.model.ApiResponse;
 import tech.id.tasktrack.model.LoginRequest;
 import tech.id.tasktrack.model.LoginResponse;
 import tech.id.tasktrack.model.Pegawai;
+import tech.id.tasktrack.model.PegawaiResponse;
 import tech.id.tasktrack.model.ScheduleResponse;
 
 public interface ApiService {
@@ -33,6 +34,7 @@ public interface ApiService {
             @Path("id") int pegawaiId
     );
 
+
     @GET("schedule/pegawai/{id}/bulan")
     Call<ScheduleResponse> getScheduleByMonth(
             @Header("Authorization") String token,
@@ -50,6 +52,15 @@ public interface ApiService {
             @Field("tanggal") String tanggal,
             @Field("verifikasi_pegawai") String verifikasi_pegawai
     );
+
+    @GET("daftar_schedule/{id}")
+    Call<ScheduleResponse> listScheduleEmployees(
+            @Header("Authorization") String token,
+            @Path("id") int id,
+            @Query("tanggal") String tanggal
+    );
+    @GET("pegawais")
+    Call<PegawaiResponse> pegawais(@Header("Authorization") String token, @Field("id") int id);
 
 
 

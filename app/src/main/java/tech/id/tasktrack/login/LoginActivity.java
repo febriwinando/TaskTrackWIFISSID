@@ -7,6 +7,7 @@ import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
@@ -24,6 +25,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.google.android.material.textfield.TextInputEditText;
 
+import java.util.List;
 import java.util.Objects;
 
 import retrofit2.Call;
@@ -38,6 +40,10 @@ import tech.id.tasktrack.api.SessionManager;
 import tech.id.tasktrack.model.LoginRequest;
 import tech.id.tasktrack.model.LoginResponse;
 import tech.id.tasktrack.model.Pegawai;
+import tech.id.tasktrack.model.PegawaiResponse;
+import tech.id.tasktrack.model.Schedule;
+import tech.id.tasktrack.model.ScheduleResponse;
+import tech.id.tasktrack.verifikator.VerifikatorActivity;
 
 public class LoginActivity extends AppCompatActivity {
     private static final int REQ_FINE_LOCATION = 1001;
@@ -56,9 +62,16 @@ public class LoginActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         session = new SessionManager(this);
         if (session.getToken() != null) {
-            startActivity(new Intent(LoginActivity.this, MainActivity.class));
-            finish();
-            return;
+            Log.d("LevelUser", session.getPegawaiLevel());
+            if (Objects.equals(session.getPegawaiLevel(), "officer")){
+                startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                finish();
+                return;
+            }else{
+                startActivity(new Intent(LoginActivity.this, VerifikatorActivity.class));
+                finish();
+                return;
+            }
         }
         setContentView(R.layout.activity_login);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -104,10 +117,18 @@ public class LoginActivity extends AppCompatActivity {
                 if (response.isSuccessful() && response.body() != null) {
                     session.saveToken("Bearer " + response.body().token);
                     session.savePegawaiId(response.body().pegawai.id);
+                    session.savePegawaiLevel(response.body().pegawai.level);
+
                     Pegawai pegawai = response.body().pegawai;
                     dbHelper.insertPegawai(pegawai);
-                    startActivity(new Intent(LoginActivity.this, MainActivity.class));
-                    finish();
+
+                    if (pegawai.level != "officer"){
+                        getListScheduleEmployees();
+                    }else {
+                        startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                        finish();
+                    }
+
                 } else {
                     Toast.makeText(LoginActivity.this, "Login Failed", Toast.LENGTH_SHORT).show();
                 }
@@ -117,6 +138,33 @@ public class LoginActivity extends AppCompatActivity {
             public void onFailure(@NonNull Call<LoginResponse> call, @NonNull Throwable t) {
                 progressBar.setVisibility(android.view.View.GONE);
                 Toast.makeText(LoginActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void getListScheduleEmployees() {
+        progressBar.setVisibility(android.view.View.VISIBLE);
+        String token = session.getToken();
+        int pegawaiId = session.getPegawaiId();
+
+        api.listScheduleEmployees(token, pegawaiId, "2025-11-22").enqueue(new Callback<ScheduleResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<ScheduleResponse> call, @NonNull Response<ScheduleResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+
+                    progressBar.setVisibility(View.INVISIBLE);
+                    List<Schedule> schedules = response.body().data;
+                    dbHelper.insertListScheduleEmployees(schedules);
+
+                    startActivity(new Intent(LoginActivity.this, VerifikatorActivity.class));
+                    finish();
+                }
+
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ScheduleResponse> call, @NonNull Throwable t) {
+                progressBar.setVisibility(View.INVISIBLE);
             }
         });
     }

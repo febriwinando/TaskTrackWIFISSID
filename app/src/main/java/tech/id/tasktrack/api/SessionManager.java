@@ -7,6 +7,7 @@ public class SessionManager {
     private static final String PREF_NAME = "APP_PREFS";
     private static final String KEY_TOKEN = "AUTH_TOKEN";
     private static final String KEY_PEGAWAI_ID = "PEGAWAI_ID";
+    private static final String KEY_PEGAWAI_LEVEL = "PEGAWAI_LEVEL";
 
     private final SharedPreferences prefs;
 
@@ -35,6 +36,14 @@ public class SessionManager {
 
     public int getPegawaiId() {
         return prefs.getInt(KEY_PEGAWAI_ID, 0); // default 0
+    }
+
+    public void savePegawaiLevel(String level) {
+        prefs.edit().putString(KEY_PEGAWAI_LEVEL, level).apply();
+    }
+
+    public String getPegawaiLevel() {
+        return prefs.getString(KEY_PEGAWAI_LEVEL, "officer"); // default 0
     }
 
     // -------------------------
