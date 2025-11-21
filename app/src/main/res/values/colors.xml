@@ -5,12 +5,18 @@
     <color name="purple_700">#FF3700B3</color>
     <color name="teal_200">#FF03DAC5</color>
     <color name="teal_700">#FF018786</color>
-    <color name="black">#1c0e0d</color>
+<!--    <color name="black">#1c0e0d</color>-->
     <color name="white">#FFFFFFFF</color>
     <color name="bg_white">#efefef</color>
 <!--    <color name="tema">#1F94D2</color>-->
-    <color name="tema">#ea5812</color>
-    <color name="abuabu_font">#87888c</color>
+<!--    <color name="tema">#ea5812</color>-->
+    <color name="tema">#fc6e20</color>
+    <color name="black">#1b1b1b</color>
+<!--    <color name="bg_white">#ffe7d0</color>-->
+    <color name="abuabu_font">#323232</color>
+
+
+<!--    <color name="abuabu_font">#87888c</color>-->
     <color name="kuning">#F7B620</color>
 
 </resources>

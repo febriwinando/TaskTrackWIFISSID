@@ -16,6 +16,7 @@ import tech.id.tasktrack.model.Kegiatan;
 import tech.id.tasktrack.model.Lokasi;
 import tech.id.tasktrack.model.Pegawai;
 import tech.id.tasktrack.model.Schedule;
+import tech.id.tasktrack.verifikator.model.PegawaiSimple;
 import tech.id.tasktrack.wifilog.WifiLog;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
@@ -72,6 +73,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "id INTEGER PRIMARY KEY, " +
                 "tanggal TEXT, " +
                 "pegawai_id INTEGER, " +
+                "employee_id TEXT, " +
                 "pegawai_name TEXT, " +
                 "kegiatan_id INTEGER, " +
                 "task TEXT, " +
@@ -104,6 +106,66 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
 
+    public List<PegawaiSimple> getDistinctPegawaiByTanggal(String tanggal) {
+        List<PegawaiSimple> list = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String sql = "SELECT DISTINCT pegawai_id, employee_id, pegawai_name " +
+                "FROM " + TABLE_SCHEDULE + " " +
+                "WHERE tanggal = ? " +
+                "ORDER BY pegawai_name ASC";
+
+        Cursor cursor = db.rawQuery(sql, new String[]{tanggal});
+
+        if (cursor.moveToFirst()) {
+            do {
+                list.add(new PegawaiSimple(
+                        cursor.getInt(cursor.getColumnIndexOrThrow("pegawai_id")),
+                        cursor.getString(cursor.getColumnIndexOrThrow("employee_id")),
+                        cursor.getString(cursor.getColumnIndexOrThrow("pegawai_name"))
+                ));
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        return list;
+    }
+
+    public int getTotalPegawaiByTanggal(String tanggal) {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String sql = "SELECT COUNT(DISTINCT pegawai_id) AS total FROM " + TABLE_SCHEDULE +
+                " WHERE tanggal = ?";
+
+        Cursor cursor = db.rawQuery(sql, new String[]{tanggal});
+        int total = 0;
+
+        if (cursor.moveToFirst()) {
+            total = cursor.getInt(cursor.getColumnIndexOrThrow("total"));
+        }
+
+        cursor.close();
+        return total;
+    }
+
+    public int getTotalTaskByTanggal(String tanggal) {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String sql = "SELECT COUNT(*) AS total FROM " + TABLE_SCHEDULE +
+                " WHERE tanggal = ?";
+
+        Cursor cursor = db.rawQuery(sql, new String[]{tanggal});
+        int total = 0;
+
+        if (cursor.moveToFirst()) {
+            total = cursor.getInt(cursor.getColumnIndexOrThrow("total"));
+        }
+
+        cursor.close();
+        return total;
+    }
+
+
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_PEGAWAI);
@@ -113,12 +175,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
+
     public void insertListScheduleEmployees(List<Schedule> schedules) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         db.beginTransaction();
         try {
-            db.delete(TABLE_SCHEDULE, null, null); // bersihkan data lama
+            db.delete(TABLE_SCHEDULE, null, null);
 
             for (Schedule s : schedules) {
                 ContentValues cv = new ContentValues();
@@ -126,17 +189,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 cv.put("id", s.id);
                 cv.put("tanggal", s.tanggal);
 
-                cv.put("pegawai_id", s.pegawai.id);
-                cv.put("pegawai_name", s.pegawai.name);
+                // Pegawai
+                cv.put("pegawai_id", s.pegawai != null ? s.pegawai.id : 0);
+                cv.put("employee_id", s.pegawai != null ? s.pegawai.employee_id : "");
+                cv.put("pegawai_name", s.pegawai != null ? s.pegawai.name : "");
 
-                cv.put("kegiatan_id", s.kegiatan.id);
-                cv.put("task", s.kegiatan.task);
-                cv.put("kegiatan_keterangan", s.kegiatan.keterangan);
+                // Kegiatan
+                cv.put("kegiatan_id", s.kegiatan != null ? s.kegiatan.id : 0);
+                cv.put("task", s.kegiatan != null ? s.kegiatan.task : "");
+                cv.put("kegiatan_keterangan", s.kegiatan != null ? s.kegiatan.keterangan : "");
 
-                cv.put("lokasi_id", s.lokasi.id);
-                cv.put("building", s.lokasi.building);
-                cv.put("floor", s.lokasi.floor);
-                cv.put("ssid", s.lokasi.ssid);
+                // Lokasi
+                cv.put("lokasi_id", s.lokasi != null ? s.lokasi.id : 0);
+                cv.put("building", s.lokasi != null ? s.lokasi.building : "");
+                cv.put("floor", s.lokasi != null ? s.lokasi.floor : "");
+                cv.put("ssid", s.lokasi != null ? s.lokasi.ssid : "");
 
                 cv.put("keterangan", s.keterangan);
 
@@ -151,7 +218,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
                 db.insert(TABLE_SCHEDULE, null, cv);
             }
-
 
             db.setTransactionSuccessful();
         } finally {
@@ -246,6 +312,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 cv.put("tanggal", s.tanggal);
 
                 cv.put("pegawai_id", s.pegawai.id);
+                cv.put("employee_id", s.pegawai.employee_id);
+
                 cv.put("pegawai_name", s.pegawai.name);
 
                 cv.put("kegiatan_id", s.kegiatan.id);
@@ -299,6 +367,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 cv.put("tanggal", s.tanggal);
 
                 cv.put("pegawai_id", s.pegawai.id);
+                cv.put("employee_id", s.pegawai.employee_id);
+
                 cv.put("pegawai_name", s.pegawai.name);
 
                 cv.put("kegiatan_id", s.kegiatan.id);

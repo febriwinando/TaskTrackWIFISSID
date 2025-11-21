@@ -24,6 +24,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.gson.Gson;
 
 import java.util.List;
 import java.util.Objects;
@@ -147,12 +148,15 @@ public class LoginActivity extends AppCompatActivity {
         String token = session.getToken();
         int pegawaiId = session.getPegawaiId();
 
-        api.listScheduleEmployees(token, pegawaiId, "2025-11-22").enqueue(new Callback<ScheduleResponse>() {
+        api.listScheduleEmployees(token, pegawaiId, "2025-11-21").enqueue(new Callback<ScheduleResponse>() {
             @Override
             public void onResponse(@NonNull Call<ScheduleResponse> call, @NonNull Response<ScheduleResponse> response) {
+                progressBar.setVisibility(View.INVISIBLE);
+
                 if (response.isSuccessful() && response.body() != null) {
 
-                    progressBar.setVisibility(View.INVISIBLE);
+
+
                     List<Schedule> schedules = response.body().data;
                     dbHelper.insertListScheduleEmployees(schedules);
 
